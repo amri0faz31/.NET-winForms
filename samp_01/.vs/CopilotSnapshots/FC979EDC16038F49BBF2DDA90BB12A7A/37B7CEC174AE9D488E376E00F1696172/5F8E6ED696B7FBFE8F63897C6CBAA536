@@ -1,0 +1,143 @@
+﻿using System;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class LoginForm : Form
+    {
+        private TextBox txtName;
+        private TextBox txtPassword;
+        private TextBox txtEmail;
+        private TextBox txtCompany;
+        private Button btnLogin;
+        private Button btnRegister;
+        private Label lblMessage;
+        private ComboBox cboRole;
+        private readonly LoginService _loginService;
+        private Panel card;
+        private Label lblName, lblEmail, lblCompany, lblPass;
+
+        public LoginForm()
+        {
+            _loginService = new LoginService();
+
+            var accent = Color.FromArgb(10, 132, 255);
+            var background = Color.FromArgb(250, 250, 252);
+            var cardColor = Color.White;
+            var textColor = Color.FromArgb(34, 34, 34);
+
+            Text = "Login";
+            ClientSize = new Size(520, 360);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+            Font = new Font("Segoe UI", 9);
+
+            var lblTitle = new Label { Text = "Welcome", Font = new Font("Segoe UI", 18, FontStyle.Bold), Left = 28, Top = 18, AutoSize = true, ForeColor = textColor };
+            var lblSubtitle = new Label { Text = "Sign in to your account", Font = new Font("Segoe UI", 9), Left = 28, Top = 54, AutoSize = true, ForeColor = textColor };
+
+            card = new Panel { Size = new Size(460, 240), Left = 28, Top = 86, BackColor = cardColor };
+            card.Padding = new Padding(12);
+
+            var lblRole = new Label { Text = "Role", Left = 12, Top = 12, Width = 60, ForeColor = textColor };
+            cboRole = new ComboBox { Left = 80, Top = 10, Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
+            cboRole.Items.AddRange(new string[] { "user", "seller", "admin" });
+            cboRole.SelectedIndex = 0;
+            cboRole.SelectedIndexChanged += CboRole_SelectedIndexChanged;
+            card.Controls.Add(lblRole); card.Controls.Add(cboRole);
+
+            lblName = new Label { Text = "Name", Left = 12, Top = 52, Width = 60, ForeColor = textColor };
+            txtName = new TextBox { Left = 80, Top = 50, Width = 340 };
+            card.Controls.Add(lblName); card.Controls.Add(txtName);
+
+            lblEmail = new Label { Text = "Email", Left = 12, Top = 52, Width = 60, Visible = false, ForeColor = textColor };
+            txtEmail = new TextBox { Left = 80, Top = 50, Width = 340, Visible = false };
+            card.Controls.Add(lblEmail); card.Controls.Add(txtEmail);
+
+            lblCompany = new Label { Text = "Company", Left = 12, Top = 92, Width = 60, Visible = false, ForeColor = textColor };
+            txtCompany = new TextBox { Left = 80, Top = 90, Width = 340, Visible = false };
+            card.Controls.Add(lblCompany); card.Controls.Add(txtCompany);
+
+            lblPass = new Label { Text = "Password", Left = 12, Top = 132, Width = 60, ForeColor = textColor };
+            txtPassword = new TextBox { Left = 80, Top = 130, Width = 200, UseSystemPasswordChar = true };
+            card.Controls.Add(lblPass); card.Controls.Add(txtPassword);
+
+            lblMessage = new Label { Left = 12, Top = 170, Width = 420, ForeColor = Color.FromArgb(180, 0, 0) };
+            card.Controls.Add(lblMessage);
+
+            btnLogin = new Button { Text = "Login", Left = 300, Top = 126, Width = 120, BackColor = accent, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnLogin.FlatAppearance.BorderSize = 0;
+            btnLogin.Click += BtnLogin_Click; card.Controls.Add(btnLogin);
+
+            btnRegister = new Button { Text = "Register", Left = 300, Top = 158, Width = 120, BackColor = Color.Transparent, FlatStyle = FlatStyle.Flat };
+            btnRegister.FlatAppearance.BorderSize = 0;
+            btnRegister.Click += BtnRegister_Click; card.Controls.Add(btnRegister);
+
+            Controls.Add(lblTitle); Controls.Add(lblSubtitle); Controls.Add(card);
+
+            // Initialize the form state based on default role selection
+            CboRole_SelectedIndexChanged(null, EventArgs.Empty);
+        }
+
+        private void CboRole_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            var role = cboRole.SelectedItem as string;
+            var isSeller = role == "seller";
+            // user and admin both use Name
+            lblName.Visible = txtName.Visible = !isSeller;
+            lblEmail.Visible = txtEmail.Visible = isSeller;
+            lblCompany.Visible = txtCompany.Visible = isSeller;
+            lblMessage.Text = string.Empty;
+        }
+
+        private void BtnRegister_Click(object? sender, EventArgs e)
+        {
+            var role = cboRole.SelectedItem as string;
+            if (role == "seller")
+            {
+                using var reg = new Forms.ServiceProvider.ProviderRegistrationForm();
+                reg.ShowDialog(this);
+            }
+            else
+            {
+                using var reg = new RegisterForm();
+                reg.ShowDialog(this);
+            }
+        }
+
+        private void BtnLogin_Click(object? sender, EventArgs e)
+        {
+            lblMessage.Text = "";
+            var role = (cboRole.SelectedItem as string) ?? "user";
+            var dto = new LoginDTO { Role = role, Name = txtName.Text.Trim(), Email = txtEmail.Text.Trim(), CompanyName = txtCompany.Text.Trim(), Password = txtPassword.Text };
+            if (_loginService.Authenticate(dto, out var profile) && profile != null)
+            {
+                if (role == "seller")
+                {
+                    var seller = (Domain.DTO.SellerProfileDTO)profile;
+                    var frm = new Forms.ServiceProvider.ServiceProviderDashboardForm(seller);
+                    frm.Show(); Hide(); frm.FormClosed += (s, e2) => { Show(); };
+                }
+                else if (role == "admin")
+                {
+                    var admin = (Domain.DTO.AdminProfileDTO)profile;
+                    var frm = new samp_01.Forms.Admin.AdminDashboardForm(admin);
+                    frm.Show(); Hide(); frm.FormClosed += (s, e2) => { Show(); };
+                }
+                else
+                {
+                    var user = (Domain.DTO.UserProfileDTO)profile;
+                    var frm = new Forms.User.DashboardForm(user);
+                    frm.Show(); Hide(); frm.FormClosed += (s, e2) => { Show(); };
+                }
+            }
+            else
+            {
+                lblMessage.Text = "Invalid credentials.";
+            }
+        }
+    }
+}

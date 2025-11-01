@@ -1,0 +1,26 @@
+﻿using System;
+
+namespace samp_01.Services
+{
+ // Compatibility wrapper: some files reference samp_01.Services.UserService
+ // after reorganization the real implementation is in samp_01.Services.User.UserService.
+ public class UserService
+ {
+ private readonly samp_01.Services.User.UserService _inner;
+
+ public UserService()
+ {
+ _inner = new samp_01.Services.User.UserService();
+ }
+
+ public bool Register(string name, string password, out string? error)
+ {
+ return _inner.Register(name, password, out error);
+ }
+
+ public bool Validate(string name, string password)
+ {
+ return _inner.Validate(name, password);
+ }
+ }
+}

@@ -1,0 +1,21 @@
+using System;
+
+namespace samp_01.Domain.DTO
+{
+    public class UserProfileDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
+        public string? Email { get; set; }
+        public string? AddressLine1 { get; set; }
+        public string? AddressLine2 { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? PostalCode { get; set; }
+        public string? Country { get; set; }
+        public string? CardMasked { get; set; }
+        public string? CardLast4 { get; set; }
+        public string? CardExpiry { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+}

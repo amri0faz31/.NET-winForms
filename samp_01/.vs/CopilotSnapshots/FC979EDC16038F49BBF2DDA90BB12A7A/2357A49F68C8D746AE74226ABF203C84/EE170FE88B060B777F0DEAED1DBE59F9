@@ -1,0 +1,74 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services;
+
+namespace samp_01
+{
+    public class LoginForm : Form
+    {
+        private TextBox txtName;
+        private TextBox txtPassword;
+        private Button btnLogin;
+        private Button btnRegister;
+        private Label lblMessage;
+        private readonly UserService _userService;
+
+        public LoginForm()
+        {
+            _userService = new UserService();
+
+            Text = "Login";
+            ClientSize = new Size(320, 200);
+            StartPosition = FormStartPosition.CenterScreen;
+
+            var lblName = new Label { Text = "Name", Left = 20, Top = 20, Width = 80 };
+            txtName = new TextBox { Left = 110, Top = 18, Width = 180 };
+
+            var lblPass = new Label { Text = "Password", Left = 20, Top = 60, Width = 80 };
+            txtPassword = new TextBox { Left = 110, Top = 58, Width = 180, UseSystemPasswordChar = true };
+
+            btnLogin = new Button { Text = "Login", Left = 110, Top = 100, Width = 80 };
+            btnLogin.Click += BtnLogin_Click;
+
+            btnRegister = new Button { Text = "Register", Left = 210, Top = 100, Width = 80 };
+            btnRegister.Click += BtnRegister_Click;
+
+            lblMessage = new Label { Left = 20, Top = 140, Width = 280, ForeColor = Color.Red };
+
+            Controls.AddRange(new Control[] { lblName, txtName, lblPass, txtPassword, btnLogin, btnRegister, lblMessage });
+        }
+
+        private void BtnRegister_Click(object? sender, EventArgs e)
+        {
+            using var reg = new RegisterForm();
+            reg.ShowDialog(this);
+        }
+
+        private void BtnLogin_Click(object? sender, EventArgs e)
+        {
+            lblMessage.Text = "";
+            var name = txtName.Text.Trim();
+            var pass = txtPassword.Text;
+
+            try
+            {
+                if (_userService.Validate(name, pass))
+                {
+                    var dashboard = new DashboardForm(name);
+                    dashboard.Show();
+                    Hide();
+                    dashboard.FormClosed += (s, ev) => { Show(); txtPassword.Clear(); };
+                }
+                else
+                {
+                    lblMessage.Text = "Invalid name or password.";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = "Error: " + ex.Message;
+            }
+        }
+    }
+}

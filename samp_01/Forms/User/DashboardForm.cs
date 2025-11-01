@@ -1,0 +1,316 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+
+namespace samp_01.Forms.User
+{
+    public class DashboardForm : Form
+    {
+        private Button btnLogout;
+        private Button btnHome;
+        private Button btnProfile;
+        private Button btnServices;
+        private Button btnMyOrders;
+        private Button btnTransactions;
+        private Button btnMessages;
+
+        private Panel _pnlSidebar = null!;
+        private Panel _pnlMain = null!;
+        private Control? _currentView;
+        private readonly Stack<Action> _nav = new Stack<Action>();
+
+        private readonly UserProfileDTO _profile;
+        private readonly IOrderRepository _orderRepo = new AdoOrderRepository(AppConfig.ConnectionString);
+        private readonly IMessageRepository _messageRepo = new AdoMessageRepository(AppConfig.ConnectionString);
+
+        public DashboardForm(UserProfileDTO profile)
+        {
+            _profile = profile;
+
+            var background = Color.FromArgb(248, 249, 250);
+            var sidebar = Color.FromArgb(45, 45, 48);
+            var headerColor = Color.FromArgb(37, 37, 38);
+
+            Text = "Dashboard";
+            ClientSize = new Size(900, 520);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+
+            // Sidebar
+            _pnlSidebar = new Panel { Left = 0, Top = 0, Width = 200, Height = ClientSize.Height, BackColor = sidebar };
+
+            // Sidebar header
+            var lblHeader = new Label
+            {
+                Text = "DASHBOARD",
+                Left = 0,
+                Top = 0,
+                Width = 200,
+                Height = 80,
+                BackColor = headerColor,
+                ForeColor = Color.White,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            _pnlSidebar.Controls.Add(lblHeader);
+
+            btnHome = CreateSidebarButton("Home", 90, 45);
+            btnHome.Click += (s, e) => { _nav.Clear(); ShowHome(); };
+
+            btnProfile = CreateSidebarButton("Profile", 135, 45);
+            btnProfile.Click += (s, e) => { _nav.Clear(); ShowProfile(); };
+
+            btnServices = CreateSidebarButton("Services", 180, 45);
+            btnServices.Click += (s, e) => { _nav.Clear(); ShowServices(); };
+
+            btnMyOrders = CreateSidebarButton("My Orders", 225, 45);
+            btnMyOrders.Click += (s, e) => { _nav.Clear(); ShowMyOrders(); };
+
+            btnTransactions = CreateSidebarButton("Transactions", 270, 45);
+            btnTransactions.Click += (s, e) => { _nav.Clear(); ShowTransactions(); };
+
+            btnMessages = CreateSidebarButton("Messages", 315, 45);
+            btnMessages.Click += (s, e) => { _nav.Clear(); ShowMessages(); };
+
+            btnLogout = CreateSidebarButton("Logout", ClientSize.Height - 70, 45);
+            btnLogout.Click += (s, e) => Close();
+            btnLogout.BackColor = Color.FromArgb(60, 60, 60);
+            btnLogout.ForeColor = Color.FromArgb(220, 120, 120);
+
+            _pnlSidebar.Controls.AddRange(new Control[] { btnHome, btnProfile, btnServices, btnMyOrders, btnTransactions, btnMessages, btnLogout });
+
+            // Main area - will host the selected view
+            _pnlMain = new Panel { Left = 200, Top = 0, Width = ClientSize.Width - 200, Height = ClientSize.Height, BackColor = background, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
+
+            Controls.AddRange(new Control[] { _pnlSidebar, _pnlMain });
+
+            // Default view
+            ShowHome();
+            RefreshCounts();
+        }
+
+        private Button CreateSidebarButton(string text, int top, int height)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Left = 0,
+                Top = top,
+                Width = 200,
+                Height = height,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(20, 0, 0, 0),
+                Font = new Font("Segoe UI", 9),
+                ImageAlign = ContentAlignment.MiddleLeft
+            };
+
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(62, 62, 66);
+            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 215);
+
+            return btn;
+        }
+
+        private void RefreshCounts()
+        {
+            try
+            {
+                var orders = _orderRepo.GetByUser(_profile.Id);
+                var active = orders.Count(o => !string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase) && !string.Equals(o.Status, "Cancelled", StringComparison.OrdinalIgnoreCase));
+                var conversations = 0;
+                foreach (var o in orders)
+                {
+                    var msgs = _messageRepo.GetByOrder(o.Id);
+                    if (msgs != null && msgs.Count > 0) conversations++;
+                }
+                btnMyOrders.Text = $"My Orders ({active})";
+                btnTransactions.Text = $"Transactions ({orders.Count(o => string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase))})";
+                // Direct messages count could be added via GetDirectConversations
+            }
+            catch { /* ignore */ }
+        }
+
+        // Services list as embedded form to separate concerns
+        private void ShowServices()
+        {
+            var servicesForm = new UserServicesForm(_profile)
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(servicesForm);
+            servicesForm.Show(); RefreshCounts();
+        }
+
+        private void ShowMyOrders()
+        {
+            var ordersForm = new UserOrdersForm(_profile, "active")
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(ordersForm);
+            ordersForm.Show(); RefreshCounts();
+        }
+
+        private void ShowTransactions()
+        {
+            var ordersForm = new UserOrdersForm(_profile, "completed")
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(ordersForm);
+            ordersForm.Show(); RefreshCounts();
+        }
+
+        private void ShowMessages()
+        {
+            var dm = new DirectMessagesForm(_profile)
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(dm);
+            dm.Show();
+        }
+
+        private void ShowHome()
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+
+            // Welcome card
+            var welcomeCard = new Panel
+            {
+                Left = 30,
+                Top = 30,
+                Width = _pnlMain.Width - 60,
+                Height = 140,
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            var lblWelcome = new Label
+            {
+                Text = $"Welcome back,",
+                Left = 25,
+                Top = 25,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 14),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            var lblName = new Label
+            {
+                Text = _profile.Name,
+                Left = 25,
+                Top = 55,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+
+            var lblRole = new Label
+            {
+                Text = "User Account",
+                Left = 25,
+                Top = 90,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            welcomeCard.Controls.Add(lblWelcome);
+            welcomeCard.Controls.Add(lblName);
+            welcomeCard.Controls.Add(lblRole);
+            panel.Controls.Add(welcomeCard);
+
+            // Quick stats section
+            var statsPanel = new Panel
+            {
+                Left = 30,
+                Top = 190,
+                Width = _pnlMain.Width - 60,
+                Height = 120,
+                BackColor = Color.Transparent
+            };
+
+            var lblStats = new Label
+            {
+                Text = "Your Overview",
+                Left = 0,
+                Top = 0,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+            statsPanel.Controls.Add(lblStats);
+
+            // Add some placeholder stats (replace with real data)
+            var lblServices = new Label
+            {
+                Text = "Active Services: 0",
+                Left = 0,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblServices);
+
+            var lblBookings = new Label
+            {
+                Text = "Active Bookings: 0",
+                Left = 200,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblBookings);
+
+            panel.Controls.Add(statsPanel);
+            LoadView(panel);
+        }
+
+        private void ShowProfile()
+        {
+            // Embed UserProfileForm into the main panel
+            var prof = new UserProfileForm(_profile.Name)
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(prof);
+            prof.Show();
+        }
+
+        private void LoadView(Control view)
+        {
+            // Dispose previous view safely
+            if (_currentView != null)
+            {
+                _pnlMain.Controls.Remove(_currentView);
+                _currentView.Dispose();
+                _currentView = null;
+            }
+
+            _currentView = view;
+            _pnlMain.Controls.Clear();
+            _pnlMain.Controls.Add(view);
+        }
+    }
+}

@@ -1,0 +1,449 @@
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Services.ServiceProvider;
+
+namespace samp_01.Forms.ServiceProvider
+{
+    public class ServiceProviderDashboardForm : Form
+    {
+        private readonly SellerProfileDTO _profile;
+        private readonly ServProProfileService _profileService;
+        private readonly PortfolioService _portfolioService = new PortfolioService();
+
+        private Button btnLogout;
+        private Button btnHome;
+        private Button btnProfile;
+        private Button btnPortfolio;
+
+        private Panel _pnlSidebar = null!;
+        private Panel _pnlMain = null!;
+        private Control? _currentView;
+
+        public ServiceProviderDashboardForm(SellerProfileDTO profile)
+        {
+            _profile = profile;
+            _profileService = new ServProProfileService();
+
+            Text = "Provider Dashboard";
+            ClientSize = new Size(900, 520);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = Color.White;
+
+            // Colors
+            var sidebarColor = Color.FromArgb(45, 45, 48);
+            var headerColor = Color.FromArgb(37, 37, 38);
+            var background = Color.FromArgb(248, 249, 250);
+
+            // Sidebar
+            _pnlSidebar = new Panel
+            {
+                Left = 0,
+                Top = 0,
+                Width = 200,
+                Height = ClientSize.Height,
+                BackColor = sidebarColor
+            };
+
+            // Header in sidebar
+            var lblHeader = new Label
+            {
+                Text = "PROVIDER",
+                Left = 0,
+                Top = 0,
+                Width = 200,
+                Height = 80,
+                BackColor = headerColor,
+                ForeColor = Color.White,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            _pnlSidebar.Controls.Add(lblHeader);
+
+            btnHome = CreateSidebarButton("Home", 90, 45);
+            btnHome.Click += (s, e) => ShowHome();
+
+            btnProfile = CreateSidebarButton("Profile", 135, 45);
+            btnProfile.Click += (s, e) => ShowProfile();
+
+            btnPortfolio = CreateSidebarButton("Portfolio", 180, 45);
+            btnPortfolio.Click += (s, e) => ShowPortfolio();
+
+            // Only allow3D modeling sellers to use Portfolio (assuming ServiceId==1)
+            btnPortfolio.Visible = btnPortfolio.Enabled = (_profile.ServiceId == 1);
+
+            btnLogout = CreateSidebarButton("Logout", ClientSize.Height - 70, 45);
+            btnLogout.Click += (s, e) => Close();
+            btnLogout.BackColor = Color.FromArgb(60, 60, 60);
+            btnLogout.ForeColor = Color.FromArgb(220, 120, 120);
+
+            _pnlSidebar.Controls.AddRange(new Control[] { btnHome, btnProfile, btnPortfolio, btnLogout });
+
+            // Main area - will host the selected view
+            _pnlMain = new Panel
+            {
+                Left = 200,
+                Top = 0,
+                Width = ClientSize.Width - 200,
+                Height = ClientSize.Height,
+                BackColor = background,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            Controls.AddRange(new Control[] { _pnlSidebar, _pnlMain });
+
+            // Default view
+            ShowHome();
+        }
+
+        private Button CreateSidebarButton(string text, int top, int height)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Left = 0,
+                Top = top,
+                Width = 200,
+                Height = height,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(20, 0, 0, 0),
+                Font = new Font("Segoe UI", 9),
+                ImageAlign = ContentAlignment.MiddleLeft
+            };
+
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(62, 62, 66);
+            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 215);
+
+            return btn;
+        }
+
+        private void ShowHome()
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+
+            // Welcome section
+            var welcomePanel = new Panel
+            {
+                Left = 30,
+                Top = 30,
+                Width = _pnlMain.Width - 60,
+                Height = 140,
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            var lblWelcome = new Label
+            {
+                Text = $"Welcome back,",
+                Left = 25,
+                Top = 25,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 14),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            var lblCompany = new Label
+            {
+                Text = _profile.CompanyName,
+                Left = 25,
+                Top = 55,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+
+            var lblRole = new Label
+            {
+                Text = "Service Provider",
+                Left = 25,
+                Top = 90,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            welcomePanel.Controls.Add(lblWelcome);
+            welcomePanel.Controls.Add(lblCompany);
+            welcomePanel.Controls.Add(lblRole);
+            panel.Controls.Add(welcomePanel);
+
+            // Quick stats section (you can add real data here)
+            var statsPanel = new Panel
+            {
+                Left = 30,
+                Top = 190,
+                Width = _pnlMain.Width - 60,
+                Height = 120,
+                BackColor = Color.Transparent
+            };
+
+            var lblStats = new Label
+            {
+                Text = "Dashboard Overview",
+                Left = 0,
+                Top = 0,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+            statsPanel.Controls.Add(lblStats);
+
+            var lblServices = new Label
+            {
+                Text = "Active Services: 0",
+                Left = 0,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblServices);
+
+            var lblCustomers = new Label
+            {
+                Text = "Total Customers: 0",
+                Left = 200,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblCustomers);
+
+            panel.Controls.Add(statsPanel);
+            LoadView(panel);
+        }
+
+        private void ShowProfile()
+        {
+            var p = _profileService.GetProfile(_profile.Id);
+            if (p == null) return;
+
+            // Embed ServiceProviderProfileForm into the main panel instead of showing as dialog
+            var prof = new ServiceProviderProfileForm(p)
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(prof);
+            prof.Show();
+        }
+
+        private static Image? LoadThumbnail(string path, int w, int h)
+        {
+            try
+            {
+                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var img = Image.FromStream(fs, useEmbeddedColorManagement: false, validateImageData: false);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.DrawImage(img, new Rectangle(0, 0, w, h));
+                return bmp;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private void ShowPortfolio()
+        {
+            // Only for3D modeling service providers
+            if (_profile.ServiceId != 1)
+            {
+                MessageBox.Show("Portfolio is only available for3D modeling providers.");
+                return;
+            }
+
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor, AutoScroll = true };
+            var y = 20;
+
+            // Group1: Portfolio description editor
+            var title1 = new Label { Text = "Portfolio", Left = 20, Top = y, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(title1);
+            y += 30;
+            var existing = _portfolioService.Get(_profile.Id);
+            string? profilePic = existing?.ProfilePicPath;
+            var txtDesc = new TextBox { Left = 20, Top = y, Width = 520, Height = 60, Multiline = true, Text = existing?.Description ?? string.Empty };
+            y += 70;
+            panel.Controls.Add(txtDesc);
+            var numMin = new NumericUpDown { Left = 20, Top = y, Width = 120, DecimalPlaces = 2, Minimum = 0, Maximum = 1000000, Value = (decimal)(existing?.PriceRangeMin ?? 0) };
+            var numMax = new NumericUpDown { Left = 160, Top = y, Width = 120, DecimalPlaces = 2, Minimum = 0, Maximum = 1000000, Value = (decimal)(existing?.PriceRangeMax ?? 0) };
+            y += 40;
+            panel.Controls.Add(numMin);
+            panel.Controls.Add(numMax);
+            var txtSkills = new TextBox { Left = 20, Top = y, Width = 520, Text = existing?.Skills ?? string.Empty };
+            y += 30;
+            panel.Controls.Add(txtSkills);
+            var pic = new PictureBox { Left = 560, Top = 20, Width = 120, Height = 120, BorderStyle = BorderStyle.FixedSingle, SizeMode = PictureBoxSizeMode.Zoom };
+            if (!string.IsNullOrEmpty(existing?.ProfilePicPath) && File.Exists(existing.ProfilePicPath))
+            {
+                var thumb = LoadThumbnail(existing.ProfilePicPath, pic.Width, pic.Height);
+                if (thumb != null) pic.Image = thumb;
+            }
+            panel.Controls.Add(pic);
+            var btnPic = new Button { Text = "Choose Picture", Left = 560, Top = 150, Width = 120 };
+            btnPic.Click += (s, e) =>
+            {
+                using var ofd = new OpenFileDialog { Filter = "Images|*.jpg;*.jpeg;*.png" };
+                if (ofd.ShowDialog(this) == DialogResult.OK)
+                {
+                    profilePic = ofd.FileName;
+                    // dispose previous image to free memory
+                    if (pic.Image != null) { pic.Image.Dispose(); pic.Image = null; }
+                    var thumb = LoadThumbnail(profilePic, pic.Width, pic.Height);
+                    if (thumb != null) pic.Image = thumb;
+                }
+            };
+            panel.Controls.Add(btnPic);
+            var btnSave = new Button { Text = "Save", Left = 20, Top = y, Width = 100 };
+            btnSave.Click += (s, e) =>
+            {
+                string? savedPath = null;
+                if (!string.IsNullOrEmpty(profilePic) && File.Exists(profilePic))
+                {
+                    var destDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "portfolio");
+                    Directory.CreateDirectory(destDir);
+                    var dest = Path.Combine(destDir, Path.GetFileName(profilePic));
+                    File.Copy(profilePic, dest, true);
+                    savedPath = dest;
+                }
+                _portfolioService.Save(_profile.Id, txtDesc.Text.Trim(), (decimal?)numMin.Value, (decimal?)numMax.Value, string.IsNullOrWhiteSpace(txtSkills.Text) ? null : txtSkills.Text.Trim(), savedPath ?? existing?.ProfilePicPath);
+                MessageBox.Show("Saved.");
+            };
+            panel.Controls.Add(btnSave);
+            y += 50;
+
+            // Group2: Past projects (list + add)
+            var title2 = new Label { Text = "Past Projects", Left = 20, Top = y, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(title2);
+            y += 30;
+            var flow = new FlowLayoutPanel { Left = 20, Top = y, Width = _pnlMain.Width - 60, Height = 220, AutoScroll = true, BackColor = Color.Transparent, WrapContents = true, FlowDirection = FlowDirection.LeftToRight };
+            void ReloadProjects()
+            {
+                // dispose any existing images to reduce memory usage
+                foreach (Control c in flow.Controls)
+                {
+                    if (c is Panel pnl)
+                    {
+                        foreach (Control cc in pnl.Controls)
+                        {
+                            if (cc is PictureBox pb && pb.Image != null) { pb.Image.Dispose(); pb.Image = null; }
+                        }
+                    }
+                }
+                flow.Controls.Clear();
+                var projects = _portfolioService.ListProjects(_profile.Id);
+                foreach (var p in projects)
+                {
+                    var card = new Panel { Width = 220, Height = 140, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(8) };
+                    var plbl = new Label { Text = p.Title, Left = 8, Top = 8, Width = 180, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+                    var pdesc = new Label { Text = p.Description, Left = 8, Top = 28, Width = 180, Height = 40 };
+                    var del = new Button { Text = "Delete", Left = 8, Top = 100, Width = 80 };
+                    del.Click += (s, e) => { if (MessageBox.Show("Delete this project?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes) { if (_portfolioService.DeleteProject(p.Id, _profile.Id)) ReloadProjects(); } };
+                    card.Controls.Add(plbl);
+                    card.Controls.Add(pdesc);
+                    card.Controls.Add(del);
+                    if (!string.IsNullOrEmpty(p.ImagePath) && File.Exists(p.ImagePath))
+                    {
+                        var thumb = LoadThumbnail(p.ImagePath, 70, 70);
+                        if (thumb != null)
+                        {
+                            var pp = new PictureBox { Left = 140, Top = 8, Width = 70, Height = 70, SizeMode = PictureBoxSizeMode.Zoom, BorderStyle = BorderStyle.FixedSingle, Image = thumb };
+                            card.Controls.Add(pp);
+                        }
+                    }
+                    flow.Controls.Add(card);
+                }
+            }
+            panel.Controls.Add(flow);
+            y += 230;
+            var btnAdd = new Button { Text = "Add Project", Left = 20, Top = y, Width = 120 };
+            btnAdd.Click += (s, e) =>
+            {
+                using var dlg = new AddProjectDialog();
+                if (dlg.ShowDialog(this) == DialogResult.OK)
+                {
+                    string? savedImg = null;
+                    if (!string.IsNullOrEmpty(dlg.ImagePath) && File.Exists(dlg.ImagePath))
+                    {
+                        var destDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "portfolio", "projects");
+                        Directory.CreateDirectory(destDir);
+                        var dest = Path.Combine(destDir, Path.GetFileName(dlg.ImagePath));
+                        File.Copy(dlg.ImagePath, dest, true);
+                        savedImg = dest;
+                    }
+                    _portfolioService.AddProject(_profile.Id, dlg.ProjectTitle!, dlg.ProjectDescription, savedImg);
+                    ReloadProjects();
+                }
+            };
+            panel.Controls.Add(btnAdd);
+            ReloadProjects();
+
+            LoadView(panel);
+        }
+
+        private void LoadView(Control view)
+        {
+            // Dispose previous view safely
+            if (_currentView != null)
+            {
+                // Also dispose any images under previous view to avoid leaks
+                foreach (Control c in _currentView.Controls)
+                {
+                    if (c is PictureBox pb && pb.Image != null) { pb.Image.Dispose(); pb.Image = null; }
+                }
+                _pnlMain.Controls.Remove(_currentView);
+                _currentView.Dispose();
+                _currentView = null;
+            }
+
+            _currentView = view;
+            _pnlMain.Controls.Clear();
+            _pnlMain.Controls.Add(view);
+        }
+    }
+
+    // Simple dialog for adding a project
+    internal class AddProjectDialog : Form
+    {
+        public string? ProjectTitle => txtTitle.Text.Trim();
+        public string? ProjectDescription => string.IsNullOrWhiteSpace(txtDesc.Text) ? null : txtDesc.Text.Trim();
+        public string? ImagePath => (string?)pic.Tag;
+        private TextBox txtTitle = null!;
+        private TextBox txtDesc = null!;
+        private PictureBox pic = null!;
+
+        public AddProjectDialog()
+        {
+            Text = "Add Project";
+            ClientSize = new Size(420, 300);
+            StartPosition = FormStartPosition.CenterParent;
+            Font = new Font("Segoe UI", 9);
+
+            var lbl1 = new Label { Text = "Title", Left = 12, Top = 16, Width = 80 };
+            txtTitle = new TextBox { Left = 100, Top = 14, Width = 300 };
+            var lbl2 = new Label { Text = "Description", Left = 12, Top = 48, Width = 80 };
+            txtDesc = new TextBox { Left = 100, Top = 46, Width = 300, Height = 80, Multiline = true };
+            pic = new PictureBox { Left = 100, Top = 136, Width = 120, Height = 80, BorderStyle = BorderStyle.FixedSingle, SizeMode = PictureBoxSizeMode.Zoom };
+            var btnPic = new Button { Text = "Choose Image", Left = 230, Top = 136, Width = 120 };
+            btnPic.Click += (s, e) => { using var ofd = new OpenFileDialog { Filter = "Images|*.jpg;*.jpeg;*.png" }; if (ofd.ShowDialog(this) == DialogResult.OK) { if (pic.Image != null) { pic.Image.Dispose(); pic.Image = null; } pic.Image = LoadThumbnail(ofd.FileName, pic.Width, pic.Height); pic.Tag = ofd.FileName; } };
+            var btnOk = new Button { Text = "Add", Left = 220, Top = 240, Width = 80, DialogResult = DialogResult.OK };
+            var btnCancel = new Button { Text = "Cancel", Left = 320, Top = 240, Width = 80, DialogResult = DialogResult.Cancel };
+            Controls.AddRange(new Control[] { lbl1, txtTitle, lbl2, txtDesc, pic, btnPic, btnOk, btnCancel });
+            AcceptButton = btnOk;
+            CancelButton = btnCancel;
+        }
+    }
+}

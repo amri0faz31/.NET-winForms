@@ -1,0 +1,63 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using samp_01.Data;
+
+#nullable disable
+
+namespace samp_01.Migrations
+{
+ [DbContext(typeof(AppDbContext))]
+ [Migration("20251029_AddOrdersMessagingPayments")]
+ public partial class AddOrdersMessagingPayments : Migration
+ {
+ protected override void Up(MigrationBuilder migrationBuilder)
+ {
+ migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `orders` (
+ `id` INT NOT NULL AUTO_INCREMENT,
+ `userid` INT NOT NULL,
+ `sellerid` INT NOT NULL,
+ `serviceid` INT NOT NULL,
+ `title` VARCHAR(255) NOT NULL,
+ `requirements` TEXT NULL,
+ `totalprice` DECIMAL(10,2) NOT NULL DEFAULT0,
+ `status` ENUM('Pending','In_Conversation','In_Progress','Delivered','Completed','Cancelled') NOT NULL DEFAULT 'Pending',
+ `createdat` DATETIME(6) NOT NULL,
+ `updatedat` DATETIME(6) NOT NULL,
+ PRIMARY KEY (`id`),
+ CONSTRAINT `FK_Orders_User` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+ CONSTRAINT `FK_Orders_Seller` FOREIGN KEY (`sellerid`) REFERENCES `sellers` (`id`) ON DELETE CASCADE,
+ CONSTRAINT `FK_Orders_Service` FOREIGN KEY (`serviceid`) REFERENCES `services` (`id`) ON DELETE CASCADE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+ migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `messages` (
+ `id` INT NOT NULL AUTO_INCREMENT,
+ `orderid` INT NOT NULL,
+ `senderid` INT NOT NULL,
+ `sendertype` ENUM('User','Seller') NOT NULL,
+ `message` TEXT NULL,
+ `filepath` VARCHAR(512) NULL,
+ `sentat` DATETIME(6) NOT NULL,
+ PRIMARY KEY (`id`),
+ CONSTRAINT `FK_Messages_Order` FOREIGN KEY (`orderid`) REFERENCES `orders` (`id`) ON DELETE CASCADE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+ migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `payments` (
+ `id` INT NOT NULL AUTO_INCREMENT,
+ `orderid` INT NOT NULL,
+ `amount` DECIMAL(10,2) NOT NULL,
+ `status` ENUM('Pending','Paid','Refunded') NOT NULL DEFAULT 'Pending',
+ `paidat` DATETIME(6) NULL,
+ PRIMARY KEY (`id`),
+ CONSTRAINT `FK_Payments_Order` FOREIGN KEY (`orderid`) REFERENCES `orders` (`id`) ON DELETE CASCADE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+ }
+
+ protected override void Down(MigrationBuilder migrationBuilder)
+ {
+ migrationBuilder.Sql("DROP TABLE IF EXISTS `payments`;");
+ migrationBuilder.Sql("DROP TABLE IF EXISTS `messages`;");
+ migrationBuilder.Sql("DROP TABLE IF EXISTS `orders`;");
+ }
+ }
+}

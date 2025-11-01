@@ -1,0 +1,174 @@
+using System;
+using System.Linq;
+using System.Data.Common;
+using System.Data;
+using MySql.Data.MySqlClient;
+using samp_01.Data;
+using samp_01.Domain.Entities;
+using samp_01.Helpers;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Services.User
+{
+    using DomainUser = samp_01.Domain.Entities.User;
+
+    public class UserService
+    {
+        private readonly string _connectionString;
+
+        public UserService()
+        {
+            _connectionString = AppConfig.ConnectionString;
+        }
+
+        // Register using RegisterDTO and ADO.NET
+        public bool Register(RegisterDTO dto, out string? error)
+        {
+            return Register(dto.Name, dto.Password, dto.Email,
+             dto.AddressLine1, dto.AddressLine2, dto.City, dto.State, dto.PostalCode, dto.Country,
+             dto.CardHolderName, dto.CardNumber, dto.CardExpiry, out error);
+        }
+
+        public bool Register(string name, string password, string? email,
+         string? addressLine1, string? addressLine2, string? city, string? state, string? postalCode, string? country,
+         string? cardHolderName, string? cardNumber, string? cardExpiry, out string? error)
+        {
+            error = null;
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
+            {
+                error = "Name and password required.";
+                return false;
+            }
+
+            var (hash, salt) = PasswordHelper.HashPassword(password);
+
+            using var db = new AdoDbContext(_connectionString);
+
+            // Check if user exists
+            var existsObj = db.ExecuteScalar("SELECT COUNT(1) FROM users WHERE name = @name", new MySqlParameter("@name", name));
+            var exists = Convert.ToInt32(existsObj ?? 0) > 0;
+            if (exists)
+            {
+                error = "User already exists.";
+                return false;
+            }
+
+            var masked = MaskCardNumber(cardNumber);
+            var last4 = MaskCardLast4(cardNumber);
+
+            var sql = @"INSERT INTO users
+                     (name, passwordhash, salt, email, addressline1, addressline2, city, state, postalcode, country, cardholdername, cardmasked, cardlast4, cardexpiry, createdat)
+                     VALUES
+                     (@name, @hash, @salt, @email, @address1, @address2, @city, @state, @postal, @country, @cardholder, @cardmasked, @cardlast4, @cardexpiry, @now)";
+
+            var rows = db.ExecuteNonQuery(sql,
+                new MySqlParameter("@name", name),
+                new MySqlParameter("@hash", hash),
+                new MySqlParameter("@salt", salt),
+                new MySqlParameter("@email", email ?? (object)DBNull.Value),
+                new MySqlParameter("@address1", addressLine1 ?? (object)DBNull.Value),
+                new MySqlParameter("@address2", addressLine2 ?? (object)DBNull.Value),
+                new MySqlParameter("@city", city ?? (object)DBNull.Value),
+                new MySqlParameter("@state", state ?? (object)DBNull.Value),
+                new MySqlParameter("@postal", postalCode ?? (object)DBNull.Value),
+                new MySqlParameter("@country", country ?? (object)DBNull.Value),
+                new MySqlParameter("@cardholder", cardHolderName ?? (object)DBNull.Value),
+                new MySqlParameter("@cardmasked", masked ?? (object)DBNull.Value),
+                new MySqlParameter("@cardlast4", last4 ?? (object)DBNull.Value),
+                new MySqlParameter("@cardexpiry", cardExpiry ?? (object)DBNull.Value),
+                new MySqlParameter("@now", DateTime.UtcNow)
+             );
+
+            return rows > 0;
+        }
+
+        // Authenticate using LoginDTO
+        public bool Authenticate(LoginDTO dto, out UserProfileDTO? profile)
+        {
+            profile = null;
+            if (dto == null) return false;
+
+            using var db = new AdoDbContext(_connectionString);
+
+            var sql = "SELECT id, passwordhash, salt FROM users WHERE name = @name LIMIT 1";
+            var results = db.Query(sql, r => new
+            {
+                Id = r.GetInt32(0),
+                Hash = r.IsDBNull(1) ? null : r.GetString(1),
+                Salt = r.IsDBNull(2) ? null : r.GetString(2)
+            }, new MySqlParameter("@name", dto.Name));
+
+            var entry = results.FirstOrDefault();
+            if (entry == null) return false;
+            if (entry.Salt == null || entry.Hash == null) return false;
+            if (!PasswordHelper.VerifyPassword(dto.Password, entry.Salt, entry.Hash)) return false;
+
+            // load profile by id
+            profile = GetProfileById(entry.Id);
+            return profile != null;
+        }
+
+        public UserProfileDTO? GetProfileByName(string name)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = @"SELECT id, name, email, addressline1, addressline2, city, state, postalcode, country, cardmasked, cardlast4, cardexpiry, createdat
+                                FROM users WHERE name = @name LIMIT 1";
+            var list = db.Query(sql, MapRecordToProfile, new MySqlParameter("@name", name));
+            return list.FirstOrDefault();
+        }
+
+        private UserProfileDTO? GetProfileById(int id)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = @"SELECT id, name, email, addressline1, addressline2, city, state, postalcode, country, cardmasked, cardlast4, cardexpiry, createdat
+                                FROM users WHERE id = @id LIMIT 1";
+            var list = db.Query(sql, MapRecordToProfile, new MySqlParameter("@id", id));
+            return list.FirstOrDefault();
+        }
+
+        private static UserProfileDTO MapRecordToProfile(IDataRecord r)
+        {
+            var dto = new UserProfileDTO();
+            dto.Id = r.GetInt32(0);
+            dto.Name = r.GetString(1);
+            dto.Email = r.IsDBNull(2) ? null : r.GetString(2);
+            dto.AddressLine1 = r.IsDBNull(3) ? null : r.GetString(3);
+            dto.AddressLine2 = r.IsDBNull(4) ? null : r.GetString(4);
+            dto.City = r.IsDBNull(5) ? null : r.GetString(5);
+            dto.State = r.IsDBNull(6) ? null : r.GetString(6);
+            dto.PostalCode = r.IsDBNull(7) ? null : r.GetString(7);
+            dto.Country = r.IsDBNull(8) ? null : r.GetString(8);
+            dto.CardMasked = r.IsDBNull(9) ? null : r.GetString(9);
+            dto.CardLast4 = r.IsDBNull(10) ? null : r.GetString(10);
+            dto.CardExpiry = r.IsDBNull(11) ? null : r.GetString(11);
+            dto.CreatedAt = r.IsDBNull(12) ? DateTime.MinValue : r.GetDateTime(12);
+            return dto;
+        }
+
+        // legacy Validate kept for compatibility (wraps Authenticate using DTO)
+        public bool Validate(string name, string password)
+        {
+            var dto = new LoginDTO { Name = name, Password = password };
+            return Authenticate(dto, out var profile);
+        }
+
+        // used to mask card number except last4 digits
+        private static string? MaskCardNumber(string? cardNumber)
+        {
+            if (string.IsNullOrWhiteSpace(cardNumber)) return null;
+            // only keep last4, mask rest
+            var digits = new string(cardNumber.Where(char.IsDigit).ToArray());
+            if (digits.Length <= 4) return digits;
+            return new string('*', digits.Length - 4) + digits.Substring(digits.Length - 4);
+        }
+
+        //used to extract last4 digits of card number and discard rest in storage
+        private static string? MaskCardLast4(string? cardNumber)
+        {
+            if (string.IsNullOrWhiteSpace(cardNumber)) return null;
+            var digits = new string(cardNumber.Where(char.IsDigit).ToArray());
+            if (digits.Length <= 4) return digits;
+            return digits.Substring(digits.Length - 4);
+        }
+    }
+}

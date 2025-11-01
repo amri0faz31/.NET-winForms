@@ -1,0 +1,246 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Services.ServiceProvider;
+
+namespace samp_01.Forms.ServiceProvider
+{
+    public class ServiceProviderDashboardForm : Form
+    {
+        private readonly SellerProfileDTO _profile;
+        private readonly ServProProfileService _profileService;
+
+        private Button btnLogout;
+        private Button btnHome;
+        private Button btnProfile;
+
+        private Panel _pnlSidebar = null!;
+        private Panel _pnlMain = null!;
+        private Control? _currentView;
+
+        public ServiceProviderDashboardForm(SellerProfileDTO profile)
+        {
+            _profile = profile;
+            _profileService = new ServProProfileService();
+
+            Text = "Provider Dashboard";
+            ClientSize = new Size(900, 520);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = Color.White;
+
+            // Colors
+            var sidebarColor = Color.FromArgb(45, 45, 48);
+            var headerColor = Color.FromArgb(37, 37, 38);
+            var background = Color.FromArgb(248, 249, 250);
+
+            // Sidebar
+            _pnlSidebar = new Panel
+            {
+                Left = 0,
+                Top = 0,
+                Width = 200,
+                Height = ClientSize.Height,
+                BackColor = sidebarColor
+            };
+
+            // Header in sidebar
+            var lblHeader = new Label
+            {
+                Text = "PROVIDER",
+                Left = 0,
+                Top = 0,
+                Width = 200,
+                Height = 80,
+                BackColor = headerColor,
+                ForeColor = Color.White,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            _pnlSidebar.Controls.Add(lblHeader);
+
+            btnHome = CreateSidebarButton("Home", 90, 45);
+            btnHome.Click += (s, e) => ShowHome();
+
+            btnProfile = CreateSidebarButton("Profile", 135, 45);
+            btnProfile.Click += (s, e) => ShowProfile();
+
+            btnLogout = CreateSidebarButton("Logout", ClientSize.Height - 70, 45);
+            btnLogout.Click += (s, e) => Close();
+            btnLogout.BackColor = Color.FromArgb(60, 60, 60);
+            btnLogout.ForeColor = Color.FromArgb(220, 120, 120);
+
+            _pnlSidebar.Controls.AddRange(new Control[] { btnHome, btnProfile, btnLogout });
+
+            // Main area - will host the selected view
+            _pnlMain = new Panel
+            {
+                Left = 200,
+                Top = 0,
+                Width = ClientSize.Width - 200,
+                Height = ClientSize.Height,
+                BackColor = background,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            Controls.AddRange(new Control[] { _pnlSidebar, _pnlMain });
+
+            // Default view
+            ShowHome();
+        }
+
+        private Button CreateSidebarButton(string text, int top, int height)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Left = 0,
+                Top = top,
+                Width = 200,
+                Height = height,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(20, 0, 0, 0),
+                Font = new Font("Segoe UI", 9),
+                ImageAlign = ContentAlignment.MiddleLeft
+            };
+
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(62, 62, 66);
+            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 215);
+
+            return btn;
+        }
+
+        private void ShowHome()
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+
+            // Welcome section
+            var welcomePanel = new Panel
+            {
+                Left = 30,
+                Top = 30,
+                Width = _pnlMain.Width - 60,
+                Height = 140,
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            var lblWelcome = new Label
+            {
+                Text = $"Welcome back,",
+                Left = 25,
+                Top = 25,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 14),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            var lblCompany = new Label
+            {
+                Text = _profile.CompanyName,
+                Left = 25,
+                Top = 55,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+
+            var lblRole = new Label
+            {
+                Text = "Service Provider",
+                Left = 25,
+                Top = 90,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            welcomePanel.Controls.Add(lblWelcome);
+            welcomePanel.Controls.Add(lblCompany);
+            welcomePanel.Controls.Add(lblRole);
+            panel.Controls.Add(welcomePanel);
+
+            // Quick stats section (you can add real data here)
+            var statsPanel = new Panel
+            {
+                Left = 30,
+                Top = 190,
+                Width = _pnlMain.Width - 60,
+                Height = 120,
+                BackColor = Color.Transparent
+            };
+
+            var lblStats = new Label
+            {
+                Text = "Dashboard Overview",
+                Left = 0,
+                Top = 0,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+            statsPanel.Controls.Add(lblStats);
+
+            // Add some placeholder stats (replace with real data)
+            var lblServices = new Label
+            {
+                Text = "Active Services: 0",
+                Left = 0,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblServices);
+
+            var lblCustomers = new Label
+            {
+                Text = "Total Customers: 0",
+                Left = 200,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblCustomers);
+
+            panel.Controls.Add(statsPanel);
+            LoadView(panel);
+        }
+
+        private void ShowProfile()
+        {
+            var p = _profileService.GetProfile(_profile.Id);
+            if (p == null) return;
+
+            // Embed ServiceProviderProfileForm into the main panel instead of showing as dialog
+            var prof = new ServiceProviderProfileForm(p)
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(prof);
+            prof.Show();
+        }
+
+        private void LoadView(Control view)
+        {
+            // Dispose previous view safely
+            if (_currentView != null)
+            {
+                _pnlMain.Controls.Remove(_currentView);
+                _currentView.Dispose();
+                _currentView = null;
+            }
+
+            _currentView = view;
+            _pnlMain.Controls.Clear();
+            _pnlMain.Controls.Add(view);
+        }
+    }
+}

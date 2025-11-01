@@ -1,0 +1,83 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services;
+
+namespace samp_01
+{
+    public class RegisterForm : Form
+    {
+        private TextBox txtName;
+        private TextBox txtPass1;
+        private TextBox txtPass2;
+        private Button btnCreate;
+        private Label lblMessage;
+        private readonly UserService _userService;
+
+        public RegisterForm()
+        {
+            _userService = new UserService();
+
+            Text = "Register";
+            ClientSize = new Size(380, 220);
+            StartPosition = FormStartPosition.CenterParent;
+
+            var lblName = new Label { Text = "Name", Left = 20, Top = 20, Width = 100 };
+            txtName = new TextBox { Left = 130, Top = 18, Width = 220 };
+
+            var lblPass1 = new Label { Text = "Password", Left = 20, Top = 60, Width = 100 };
+            txtPass1 = new TextBox { Left = 130, Top = 58, Width = 220, UseSystemPasswordChar = true };
+
+            var lblPass2 = new Label { Text = "Confirm Password", Left = 20, Top = 100, Width = 100 };
+            txtPass2 = new TextBox { Left = 130, Top = 98, Width = 220, UseSystemPasswordChar = true };
+
+            btnCreate = new Button { Text = "Create Account", Left = 130, Top = 140, Width = 120 };
+            btnCreate.Click += BtnCreate_Click;
+
+            lblMessage = new Label { Left = 20, Top = 170, Width = 330, ForeColor = Color.Red };
+
+            Controls.AddRange(new Control[] { lblName, txtName, lblPass1, txtPass1, lblPass2, txtPass2, btnCreate, lblMessage });
+        }
+
+        private void BtnCreate_Click(object? sender, EventArgs e)
+        {
+            lblMessage.Text = "";
+            var name = txtName.Text.Trim();
+            var p1 = txtPass1.Text;
+            var p2 = txtPass2.Text;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                lblMessage.Text = "Name required.";
+                return;
+            }
+            if (p1.Length < 6)
+            {
+                lblMessage.Text = "Password must be at least 6 characters.";
+                return;
+            }
+            if (p1 != p2)
+            {
+                lblMessage.Text = "Passwords do not match.";
+                return;
+            }
+
+            try
+            {
+                if (_userService.Register(name, p1, out var error))
+                {
+                    MessageBox.Show("Account created. You can now log in.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Close();
+                }
+                else
+                {
+                    lblMessage.Text = error ?? "Failed to create account.";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = "Error: " + ex.Message;
+            }
+        }
+    }
+}

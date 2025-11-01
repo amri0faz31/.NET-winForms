@@ -1,0 +1,206 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Domain.Entities;
+using samp_01.Data.Repositories;
+using samp_01.Services.Orders;
+
+namespace samp_01.Forms.ServiceProvider
+{
+    // Service providers manage orders. Two scopes: active (work-in-progress) and completed (history).
+    public class ProviderOrdersForm : Form
+    {
+        private readonly SellerProfileDTO _seller;
+        private readonly IOrderRepository _orders = new AdoOrderRepository(AppConfig.ConnectionString);
+        private readonly IMessageRepository _messages = new AdoMessageRepository(AppConfig.ConnectionString);
+        private readonly IUserRepository _users = new AdoUserRepository(AppConfig.ConnectionString);
+        private readonly OrderService _orderSvc = new OrderService();
+
+        private Panel _host = null!;
+        private ComboBox _statusFilter = null!;
+        private readonly string _scope; // "active" or "completed"
+
+        public ProviderOrdersForm(SellerProfileDTO seller, string scope = "active")
+        {
+            _seller = seller; _scope = scope;
+            Text = scope.Equals("completed", StringComparison.OrdinalIgnoreCase) ? "Completed Orders" : "Incoming Orders";
+            BackColor = Color.FromArgb(248, 249, 250);
+            Font = new Font("Segoe UI", 9);
+            Dock = DockStyle.Fill;
+            _host = new Panel { Dock = DockStyle.Fill, BackColor = BackColor, AutoScroll = true, Padding = new Padding(20) };
+            Controls.Add(_host);
+            BuildListPage();
+        }
+
+        private void BuildListPage()
+        {
+            _host.Controls.Clear();
+            var header = new Panel { Dock = DockStyle.Top, Height = 44 };
+            var title = new Label { Text = Text, AutoSize = true, Left = 0, Top = 10, Font = new Font("Segoe UI", 14, FontStyle.Bold) };
+            header.Controls.Add(title);
+            _statusFilter = new ComboBox { Left = 220, Top = 8, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+            if (_scope == "completed")
+            {
+                _statusFilter.Items.AddRange(new object[] { "All", "Completed" });
+            }
+            else
+            {
+                _statusFilter.Items.AddRange(new object[] { "All", "Pending", "In_Conversation", "In_Progress", "Delivered" });
+            }
+            _statusFilter.SelectedIndex = 0;
+            _statusFilter.SelectedIndexChanged += (s, e) => LoadOrders();
+            header.Controls.Add(_statusFilter);
+            _host.Controls.Add(header);
+            var list = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.LeftToRight, WrapContents = true };
+            list.Name = "list";
+            _host.Controls.Add(list);
+            LoadOrders();
+        }
+
+        private void LoadOrders()
+        {
+            var list = _host.Controls.Find("list", true).FirstOrDefault() as FlowLayoutPanel;
+            if (list == null) return; list.Controls.Clear();
+            var all = _orders.GetBySeller(_seller.Id);
+            IEnumerable<Order> filtered = all;
+            if (_scope == "completed")
+            {
+                filtered = all.Where(o => string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                filtered = all.Where(o => !string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase) && !string.Equals(o.Status, "Cancelled", StringComparison.OrdinalIgnoreCase));
+            }
+            var filter = _statusFilter.SelectedItem?.ToString() ?? "All";
+            if (filter != "All") filtered = filtered.Where(o => string.Equals(o.Status, filter, StringComparison.OrdinalIgnoreCase));
+            foreach (var o in filtered)
+            {
+                var card = new Panel { Width =320, Height = (_scope == "completed" ?140 :190), BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(10), Padding = new Padding(12) };
+                var title = new Label { Text = o.Title, Left =0, Top =0, Width =280, Font = new Font("Segoe UI",10, FontStyle.Bold) };
+                var buyer = _users.GetProfileById(o.UserId);
+                var sub = new Label { Text = $"Buyer: {buyer?.Name ?? ("User #" + o.UserId)}\nStatus: {o.Status}\nPrice: {o.TotalPrice:0.##}", Left =0, Top =28, Width =280, Height =60 };
+                card.Controls.Add(title); card.Controls.Add(sub);
+                if (_scope != "completed")
+                {
+                    var btnChat = new Button { Text = "Open Chat", Left = 0, Top = 120, Width = 90, Height = 28 };
+                    btnChat.Click += (s, e) => OpenConversation(o);
+                    card.Controls.Add(btnChat);
+                    if (string.Equals(o.Status, "In_Conversation", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var btnSet = new Button { Text = "Set Price", Left = 100, Top = 120, Width = 80, Height = 28 };
+                        btnSet.Click += (s, e) => SetPrice(o);
+                        card.Controls.Add(btnSet);
+                    }
+                    else if (string.Equals(o.Status, "In_Progress", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var btnDeliver = new Button { Text = "Deliver", Left = 100, Top = 120, Width = 80, Height = 28 };
+                        btnDeliver.Click += (s, e) => Deliver(o);
+                        card.Controls.Add(btnDeliver);
+                    }
+                }
+                list.Controls.Add(card);
+            }
+        }
+
+        private void OpenConversation(Order order)
+        {
+            _host.Controls.Clear();
+            var back = new Button { Text = "<- Back", Left = 0, Top = 0, Width = 80, Height = 28 };
+            back.Click += (s, e) => BuildListPage();
+            _host.Controls.Add(back);
+            var hdr = new Label { Text = order.Title + " - " + order.Status, Left = 90, Top = 4, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            _host.Controls.Add(hdr);
+            var convo = new Panel { Left = 0, Top = 40, Width = _host.Width - 40, Height = 420, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, AutoScroll = true, BorderStyle = BorderStyle.FixedSingle };
+            _host.Controls.Add(convo);
+            Action reload = () =>
+            {
+                convo.Controls.Clear();
+                int y =10;
+                foreach (var m in _messages.GetByOrder(order.Id))
+                {
+                    var bubble = new Panel { Left =10, Top = y, Width = convo.Width -40, Height =70, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
+                    var whoName = m.SenderType.Equals("Seller", StringComparison.OrdinalIgnoreCase)
+                     ? _seller.CompanyName
+                     : (_users.GetProfileById(m.SenderId)?.Name ?? ("User #" + m.SenderId));
+                    var who = new Label { Text = whoName, Left =10, Top =8, AutoSize = true, Font = new Font("Segoe UI",8, FontStyle.Bold) };
+                    var body = new Label { Text = string.IsNullOrEmpty(m.Body) ? "" : m.Body, Left =10, Top =26, Width = bubble.Width -20, Height =20 };
+                    bubble.Controls.Add(who); bubble.Controls.Add(body);
+                    if (!string.IsNullOrEmpty(m.FilePath) && File.Exists(m.FilePath))
+                    {
+                        var attach = new LinkLabel { Text = Path.GetFileName(m.FilePath), Left =10, Top =48, AutoSize = true };
+                        attach.LinkClicked += (s, e) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = m.FilePath, UseShellExecute = true });
+                        bubble.Controls.Add(attach);
+                    }
+                    convo.Controls.Add(bubble); y +=80;
+                }
+            };
+            reload();
+            var txt = new TextBox { Left = 0, Top = 470, Width = _host.Width - 240, Height = 60, Multiline = true, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
+            _host.Controls.Add(txt);
+            string? attachment = null;
+            var btnAttach = new Button { Text = "Attach", Left = txt.Right + 10, Top = 470, Width = 80, Height = 28, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            btnAttach.Click += (s, e) => { using var ofd = new OpenFileDialog { Filter = "All files|*.*" }; if (ofd.ShowDialog(this) == DialogResult.OK) { attachment = ofd.FileName; btnAttach.Text = "Attached"; } };
+            _host.Controls.Add(btnAttach);
+            var btnSend = new Button { Text = "Send", Left = txt.Right + 10, Top = 502, Width = 80, Height = 28, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            btnSend.Click += (s, e) =>
+            {
+                string? saved = null;
+                if (!string.IsNullOrEmpty(attachment) && File.Exists(attachment))
+                {
+                    var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "orders", order.Id.ToString(), "attachments");
+                    Directory.CreateDirectory(dir);
+                    var dest = Path.Combine(dir, Path.GetFileName(attachment));
+                    File.Copy(attachment, dest, true);
+                    saved = dest;
+                }
+                _messages.Add(new samp_01.Domain.Entities.Message { OrderId = order.Id, SenderId = _seller.Id, SenderType = "Seller", Body = string.IsNullOrWhiteSpace(txt.Text) ? null : txt.Text.Trim(), FilePath = saved, SentAt = DateTime.UtcNow });
+                txt.Clear(); attachment = null; btnAttach.Text = "Attach"; reload();
+            };
+            _host.Controls.Add(btnSend);
+        }
+
+        private void SetPrice(Order order)
+        {
+            using var dlg = new Form { Text = "Set Price", ClientSize = new Size(280, 140), StartPosition = FormStartPosition.CenterParent, Font = new Font("Segoe UI", 9) };
+            var lbl = new Label { Text = "Total Price", Left = 12, Top = 18, AutoSize = true };
+            var num = new NumericUpDown { Left = 90, Top = 16, Width = 150, DecimalPlaces = 2, Minimum = 0, Maximum = 1000000 };
+            var ok = new Button { Text = "Start", Left = 160, Top = 80, Width = 80, DialogResult = DialogResult.OK };
+            dlg.Controls.Add(lbl); dlg.Controls.Add(num); dlg.Controls.Add(ok);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                if (_orderSvc.ApprovePrice(order.Id, num.Value)) { MessageBox.Show("Order started."); BuildListPage(); } else { MessageBox.Show("Failed to update price."); }
+            }
+        }
+
+        private void Deliver(Order order)
+        {
+            using var dlg = new Form { Text = "Deliver Files", ClientSize = new Size(380, 220), StartPosition = FormStartPosition.CenterParent, Font = new Font("Segoe UI", 9) };
+            var lbl = new Label { Text = "Note (optional)", Left = 12, Top = 12, AutoSize = true };
+            var txt = new TextBox { Left = 12, Top = 34, Width = 350, Height = 100, Multiline = true };
+            var btnPick = new Button { Text = "Choose File", Left = 12, Top = 140, Width = 100 };
+            string? file = null;
+            btnPick.Click += (s, e) => { using var ofd = new OpenFileDialog { Filter = "All files|*.*" }; if (ofd.ShowDialog(this) == DialogResult.OK) file = ofd.FileName; };
+            var ok = new Button { Text = "Deliver", Left = 282, Top = 180, Width = 80, DialogResult = DialogResult.OK };
+            dlg.Controls.Add(lbl); dlg.Controls.Add(txt); dlg.Controls.Add(btnPick); dlg.Controls.Add(ok);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                string? saved = null;
+                if (!string.IsNullOrEmpty(file) && File.Exists(file))
+                {
+                    var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "orders", order.Id.ToString(), "deliveries");
+                    Directory.CreateDirectory(dir);
+                    var dest = Path.Combine(dir, Path.GetFileName(file));
+                    File.Copy(file, dest, true);
+                    saved = dest;
+                }
+                _orderSvc.MarkDelivered(order.Id, _seller.Id, saved, string.IsNullOrWhiteSpace(txt.Text) ? null : txt.Text.Trim());
+                MessageBox.Show("Delivered to buyer.");
+                BuildListPage();
+            }
+        }
+    }
+}

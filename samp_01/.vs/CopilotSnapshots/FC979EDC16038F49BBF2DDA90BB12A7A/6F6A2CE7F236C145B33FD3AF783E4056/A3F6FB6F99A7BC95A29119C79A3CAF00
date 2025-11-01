@@ -1,0 +1,102 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+
+namespace samp_01.Forms.ServiceProvider
+{
+    public class ServiceProviderDashboardForm : Form
+    {
+        private Button btnLogout;
+        private Button btnHome;
+        private Button btnProfile;
+        private Button btnPortfolio;
+        private Button btnTransactions;
+        private Button btnMessages;
+
+        private Panel _pnlSidebar = null!;
+        private Panel _pnlMain = null!;
+        private Control? _currentView;
+
+        private readonly SellerProfileDTO _profile;
+
+        public ServiceProviderDashboardForm(SellerProfileDTO profile)
+        {
+            _profile = profile;
+
+            var background = Color.FromArgb(248, 249, 250);
+            var sidebar = Color.FromArgb(45, 45, 48);
+            var headerColor = Color.FromArgb(37, 37, 38);
+
+            Text = "Provider Dashboard";
+            ClientSize = new Size(900, 520);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+
+            _pnlSidebar = new Panel { Left = 0, Top = 0, Width = 200, Height = ClientSize.Height, BackColor = sidebar };
+            var lblHeader = new Label { Text = "PROVIDER", Left = 0, Top = 0, Width = 200, Height = 80, BackColor = headerColor, ForeColor = Color.White, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+            _pnlSidebar.Controls.Add(lblHeader);
+
+            btnHome = CreateSidebarButton("Home", 90, 45); btnHome.Click += (s, e) => ShowHome();
+            btnProfile = CreateSidebarButton("Profile", 135, 45); btnProfile.Click += (s, e) => ShowProfile();
+            btnPortfolio = CreateSidebarButton("Portfolio", 180, 45); btnPortfolio.Click += (s, e) => ShowPortfolio();
+            btnTransactions = CreateSidebarButton("Transactions", 225, 45); btnTransactions.Click += (s, e) => ShowTransactions();
+            btnMessages = CreateSidebarButton("Messages", 270, 45); btnMessages.Click += (s, e) => ShowMessages();
+            btnLogout = CreateSidebarButton("Logout", ClientSize.Height - 70, 45); btnLogout.Click += (s, e) => Close(); btnLogout.BackColor = Color.FromArgb(60, 60, 60); btnLogout.ForeColor = Color.FromArgb(220, 120, 120);
+            _pnlSidebar.Controls.AddRange(new Control[] { btnHome, btnProfile, btnPortfolio, btnTransactions, btnMessages, btnLogout });
+
+            _pnlMain = new Panel { Left = 200, Top = 0, Width = ClientSize.Width - 200, Height = ClientSize.Height, BackColor = background, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
+            Controls.AddRange(new Control[] { _pnlSidebar, _pnlMain });
+
+            ShowHome();
+        }
+
+        private Button CreateSidebarButton(string text, int top, int height)
+        {
+            var btn = new Button { Text = text, Left = 0, Top = top, Width = 200, Height = height, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(20, 0, 0, 0), Font = new Font("Segoe UI", 9), ImageAlign = ContentAlignment.MiddleLeft };
+            btn.FlatAppearance.BorderSize = 0; btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(62, 62, 66); btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 215);
+            return btn;
+        }
+
+        private void ShowHome()
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+            var welcome = new Label { Text = $"Welcome, {_profile.Name}", Left = 30, Top = 30, AutoSize = true, Font = new Font("Segoe UI", 16, FontStyle.Bold) };
+            panel.Controls.Add(welcome);
+            LoadView(panel);
+        }
+
+        private void ShowProfile()
+        {
+            var repo = new AdoSellerRepository(AppConfig.ConnectionString);
+            var dto = repo.GetSellerProfileById(_profile.Id) ?? _profile;
+            var form = new ServiceProviderProfileForm(dto) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            LoadView(form); form.Show();
+        }
+
+        private void ShowPortfolio()
+        {
+            var form = new ServiceProviderPortfolioForm(_profile) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            LoadView(form); form.Show();
+        }
+
+        private void ShowTransactions()
+        {
+            var form = new ProviderOrdersForm(_profile, "transactions") { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            LoadView(form); form.Show();
+        }
+
+        private void ShowMessages()
+        {
+            var form = new ProviderOrdersForm(_profile, "messages") { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            LoadView(form); form.Show();
+        }
+
+        private void LoadView(Control view)
+        {
+            if (_currentView != null) { _pnlMain.Controls.Remove(_currentView); _currentView.Dispose(); _currentView = null; }
+            _currentView = view; _pnlMain.Controls.Clear(); _pnlMain.Controls.Add(view);
+        }
+    }
+}

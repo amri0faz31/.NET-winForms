@@ -1,0 +1,60 @@
+﻿using System;
+using System.Linq;
+using samp_01.Data;
+using samp_01.Domain.Entities;
+using samp_01.Helpers;
+
+
+// service class to handle frontend user operations(register, login, etc)
+// interacts with the database via AppDbContext
+//includes methods for registering new users and validating existing users
+namespace samp_01.Services.User
+{
+    using DomainUser = samp_01.Domain.Entities.User;
+
+    public class UserService
+        {
+            private readonly string _connectionString;
+        //constructor to initialize the service with a connection string from AppConfig
+        public UserService()
+        {
+            _connectionString = AppConfig.ConnectionString;
+         }
+
+        //method for registration with password hashing and duplicate user check
+        // password hashing responsibility is done by  PasswordHelper on Helpers/PasswordHelper.cs
+        public bool Register(string name, string password, out string? error)
+        {
+            error = null;
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
+            {
+                error = "Name and password required.";
+                return false;
+            }
+            // create a new database context for user operations
+            // check for existing user with the same name
+            using var ctx = new AppDbContext(_connectionString);
+            if (ctx.Users.Any(u => u.Name == name))
+            {
+            error = "User already exists.";
+            return false;
+            }
+
+            var (hash, salt) = PasswordHelper.HashPassword(password);
+            var user = new DomainUser { Name = name, PasswordHash = hash, Salt = salt, CreatedAt = DateTime.UtcNow };
+            ctx.Users.Add(user);
+            ctx.SaveChanges();
+            return true;
+            }
+
+        // method for validating user credentials during login
+        public bool Validate(string name, string password)
+        {
+                using var ctx = new AppDbContext(_connectionString);
+                var user = ctx.Users.SingleOrDefault(u => u.Name == name);
+                if (user == null) return false;
+                return PasswordHelper.VerifyPassword(password, user.Salt, user.PasswordHash);
+        }
+    }
+
+}

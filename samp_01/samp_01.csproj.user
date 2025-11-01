@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="Forms\Admin\AdminDashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ServiceProvider\ProviderDirectMessagesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ServiceProvider\ProviderOrdersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ServiceProvider\ProviderRegistrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ServiceProvider\ServiceProviderDashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ServiceProvider\ServiceProviderPortfolioForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ServiceProvider\ServiceProviderProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\DashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\DirectMessagesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\RegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\UserOrdersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\UserProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\User\UserServicesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

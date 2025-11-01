@@ -1,0 +1,15 @@
+﻿using System;
+
+namespace samp_01.Domain.Entities
+{
+     public class Message
+     {
+         public int Id { get; set; }
+         public int OrderId { get; set; }
+         public int SenderId { get; set; }
+         public string SenderType { get; set; } = null!; // "User" or "Seller"
+         public string? Body { get; set; }
+         public string? FilePath { get; set; }
+         public DateTime SentAt { get; set; } = DateTime.UtcNow;
+     }
+}

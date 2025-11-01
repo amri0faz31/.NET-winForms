@@ -1,0 +1,152 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Domain.Entities;
+using samp_01.Data.Repositories;
+using samp_01.Services.Orders;
+
+namespace samp_01.Forms.User
+{
+ public class UserOrdersForm : Form
+ {
+ private readonly UserProfileDTO _user;
+ private readonly IOrderRepository _orders = new AdoOrderRepository(AppConfig.ConnectionString);
+ private readonly IMessageRepository _messages = new AdoMessageRepository(AppConfig.ConnectionString);
+ private readonly ISellerRepository _sellers = new AdoSellerRepository(AppConfig.ConnectionString);
+ private readonly IPaymentRepository _payments = new AdoPaymentRepository(AppConfig.ConnectionString);
+ private readonly OrderService _orderSvc = new OrderService();
+
+ private Panel _host = null!;
+ private ComboBox _statusFilter = null!;
+ private string _mode; // "transactions" or "messages"
+
+ public UserOrdersForm(UserProfileDTO user, string mode = "transactions")
+ {
+ _user = user; _mode = mode;
+ Text = mode.Equals("messages", StringComparison.OrdinalIgnoreCase) ? "Messages" : "My Orders";
+ BackColor = Color.FromArgb(248,249,250);
+ Font = new Font("Segoe UI",9);
+ Dock = DockStyle.Fill;
+
+ _host = new Panel { Dock = DockStyle.Fill, BackColor = BackColor, AutoScroll = true, Padding = new Padding(20) };
+ Controls.Add(_host);
+
+ BuildListPage();
+ }
+
+ private void BuildListPage()
+ {
+ _host.Controls.Clear();
+
+ var header = new Panel { Dock = DockStyle.Top, Height =44 };
+ var title = new Label
+ {
+ Text = _mode.Equals("messages", StringComparison.OrdinalIgnoreCase) ? "Conversations" : "My Orders",
+ AutoSize = true,
+ Left =0,
+ Top =10,
+ Font = new Font("Segoe UI",14, FontStyle.Bold)
+ };
+ header.Controls.Add(title);
+ _statusFilter = new ComboBox { Left =220, Top =8, Width =180, DropDownStyle = ComboBoxStyle.DropDownList };
+ _statusFilter.Items.AddRange(new object[] { "All", "Pending", "In_Conversation", "In_Progress", "Delivered", "Completed", "Cancelled" });
+ _statusFilter.SelectedIndex =0;
+ _statusFilter.SelectedIndexChanged += (s, e) => LoadOrders();
+ header.Controls.Add(_statusFilter);
+ _host.Controls.Add(header);
+
+ var listPanel = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.LeftToRight, WrapContents = true };
+ listPanel.Name = "list";
+ _host.Controls.Add(listPanel);
+
+ LoadOrders();
+ }
+
+ private void LoadOrders()
+ {
+ var listPanel = _host.Controls.Find("list", true).FirstOrDefault() as FlowLayoutPanel;
+ if (listPanel == null) return;
+ listPanel.Controls.Clear();
+ var all = _orders.GetByUser(_user.Id);
+ var filter = _statusFilter.SelectedItem?.ToString() ?? "All";
+ var orders = filter == "All" ? all : all.Where(o => string.Equals(o.Status, filter, StringComparison.OrdinalIgnoreCase)).ToList();
+ foreach (var o in orders)
+ {
+ var seller = _sellers.GetSellerEntityById(o.SellerId);
+ var card = new Panel { Width =320, Height =170, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(10), Padding = new Padding(12) };
+ var title = new Label { Text = o.Title, Left =0, Top =0, Width =280, Font = new Font("Segoe UI",10, FontStyle.Bold) };
+ var sub = new Label { Text = $"Seller: {seller?.CompanyName ?? o.SellerId.ToString()}\nStatus: {o.Status}\nPrice: {o.TotalPrice:0.##}", Left =0, Top =28, Width =280, Height =60 };
+ var btnChat = new Button { Text = "Open Chat", Left =0, Top =100, Width =100, Height =28 };
+ btnChat.Click += (s, e) => OpenConversation(o);
+ card.Controls.Add(title); card.Controls.Add(sub); card.Controls.Add(btnChat);
+ if (string.Equals(o.Status, "Delivered", StringComparison.OrdinalIgnoreCase))
+ {
+ var btnPay = new Button { Text = "Pay & Complete", Left =110, Top =100, Width =120, Height =28 };
+ btnPay.Click += (s, e) => { if (_orderSvc.CompleteAndPay(o.Id, o.TotalPrice)) { MessageBox.Show("Payment successful. Order completed."); BuildListPage(); } else { MessageBox.Show("Payment failed."); } };
+ card.Controls.Add(btnPay);
+ }
+ listPanel.Controls.Add(card);
+ }
+ }
+
+ private void OpenConversation(Order order)
+ {
+ _host.Controls.Clear();
+ var back = new Button { Text = "← Back", Left =0, Top =0, Width =80, Height =28 };
+ back.Click += (s, e) => BuildListPage();
+ _host.Controls.Add(back);
+ var hdr = new Label { Text = order.Title + " - " + order.Status, Left =90, Top =4, AutoSize = true, Font = new Font("Segoe UI",12, FontStyle.Bold) };
+ _host.Controls.Add(hdr);
+ var convo = new Panel { Left =0, Top =40, Width = _host.Width -40, Height =420, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, AutoScroll = true, BorderStyle = BorderStyle.FixedSingle };
+ _host.Controls.Add(convo);
+ Action reload = () =>
+ {
+ convo.Controls.Clear();
+ int y =10;
+ foreach (var m in _messages.GetByOrder(order.Id))
+ {
+ var bubble = new Panel { Left =10, Top = y, Width = convo.Width -40, Height =70, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
+ var who = new Label { Text = m.SenderType + "#" + m.SenderId, Left =10, Top =8, AutoSize = true, Font = new Font("Segoe UI",8, FontStyle.Bold) };
+ var body = new Label { Text = string.IsNullOrEmpty(m.Body) ? "" : m.Body, Left =10, Top =26, Width = bubble.Width -20, Height =20 };
+ bubble.Controls.Add(who); bubble.Controls.Add(body);
+ if (!string.IsNullOrEmpty(m.FilePath) && File.Exists(m.FilePath))
+ {
+ var attach = new LinkLabel { Text = Path.GetFileName(m.FilePath), Left =10, Top =48, AutoSize = true };
+ attach.LinkClicked += (s, e) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = m.FilePath, UseShellExecute = true });
+ bubble.Controls.Add(attach);
+ }
+ convo.Controls.Add(bubble);
+ y +=80;
+ }
+ };
+ reload();
+
+ var txt = new TextBox { Left =0, Top =470, Width = _host.Width -240, Height =60, Multiline = true, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
+ _host.Controls.Add(txt);
+ string? attachment = null;
+ var btnAttach = new Button { Text = "Attach", Left = txt.Right +10, Top =470, Width =80, Height =28, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+ btnAttach.Click += (s, e) => { using var ofd = new OpenFileDialog { Filter = "All files|*.*" }; if (ofd.ShowDialog(this) == DialogResult.OK) { attachment = ofd.FileName; btnAttach.Text = "Attached"; } };
+ _host.Controls.Add(btnAttach);
+ var btnSend = new Button { Text = "Send", Left = txt.Right +10, Top =502, Width =80, Height =28, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+ btnSend.Click += (s, e) =>
+ {
+ string? savedPath = null;
+ if (!string.IsNullOrEmpty(attachment) && File.Exists(attachment))
+ {
+ var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "orders", order.Id.ToString(), "attachments");
+ Directory.CreateDirectory(dir);
+ var dest = Path.Combine(dir, Path.GetFileName(attachment));
+ File.Copy(attachment, dest, true);
+ savedPath = dest;
+ }
+ _messages.Add(new Message { OrderId = order.Id, SenderId = _user.Id, SenderType = "User", Body = string.IsNullOrWhiteSpace(txt.Text) ? null : txt.Text.Trim(), FilePath = savedPath, SentAt = DateTime.UtcNow });
+ txt.Clear(); attachment = null; btnAttach.Text = "Attach"; reload();
+ };
+ _host.Controls.Add(btnSend);
+ }
+ }
+}

@@ -1,0 +1,57 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class DashboardForm : Form
+    {
+        private Button btnLogout;
+        private Button btnProfile;
+        private readonly UserProfileDTO _profile;
+
+        public DashboardForm(UserProfileDTO profile)
+        {
+            _profile = profile;
+
+            var accent = Color.FromArgb(10,132,255);
+            var background = Color.FromArgb(248,249,250);
+            var sidebar = Color.FromArgb(34,34,34);
+            var card = Color.White;
+
+            Text = "Dashboard";
+            ClientSize = new Size(900,520);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+
+            // Sidebar
+            var pnlSidebar = new Panel { Left =0, Top =0, Width =200, Height = ClientSize.Height, BackColor = sidebar };
+            btnProfile = new Button { Text = "Profile", Left =20, Top =20, Width =160, BackColor = Color.Transparent, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnProfile.FlatAppearance.BorderSize =0;
+            btnProfile.Click += (s, e) => ShowProfile();
+            btnLogout = new Button { Text = "Logout", Left =20, Top =60, Width =160, BackColor = Color.Transparent, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnLogout.FlatAppearance.BorderSize =0;
+            btnLogout.Click += (s, e) => Close();
+            pnlSidebar.Controls.AddRange(new Control[] { btnProfile, btnLogout });
+
+            // Main area
+            var pnlMain = new Panel { Left =200, Top =0, Width = ClientSize.Width -200, Height = ClientSize.Height, BackColor = background };
+            var lbl = new Label { Text = $"Welcome, {_profile.Name}", Left =20, Top =20, AutoSize = true, Font = new Font(FontFamily.GenericSansSerif,14, FontStyle.Bold), ForeColor = Color.FromArgb(34,34,34) };
+            var profileCard = new Panel { Left = 20, Top = 60, Width = 500, Height = 180, BackColor = card };
+            var lblEmail = new Label { Text = $"Email: {_profile.Email}", Left = 18, Top = 18, AutoSize = true };
+            var lblAddress = new Label { Text = $"Address: {_profile.AddressLine1} {_profile.AddressLine2} {_profile.City} {_profile.PostalCode}", Left = 18, Top = 44, AutoSize = true, Width = 460 };
+            var lblCard = new Label { Text = $"Card: {_profile.CardMasked} (exp {_profile.CardExpiry})", Left = 18, Top = 74, AutoSize = true };
+            profileCard.Controls.AddRange(new Control[] { lblEmail, lblAddress, lblCard });
+            pnlMain.Controls.AddRange(new Control[] { lbl, profileCard });
+
+            Controls.AddRange(new Control[] { pnlSidebar, pnlMain });
+        }
+
+        private void ShowProfile()
+        {
+            using var prof = new UserProfileForm(_profile.Name);
+            prof.ShowDialog(this);
+        }
+    }
+}

@@ -1,0 +1,235 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class LoginForm : Form
+    {
+        private TextBox txtName;
+        private TextBox txtPassword;
+        private TextBox txtEmail;
+        private TextBox txtCompany;
+        private Button btnLogin;
+        private Button btnRegister;
+        private LinkLabel lnkRegister;
+        private Label lblMessage;
+        private ComboBox cboRole;
+        private readonly LoginService _loginService;
+
+        public LoginForm()
+        {
+            _loginService = new LoginService();
+
+            // Modern palette
+            var accent = Color.FromArgb(10, 132, 255);
+            var background = Color.FromArgb(250, 250, 252);
+            var cardColor = Color.White;
+            var textColor = Color.FromArgb(34, 34, 34);
+
+            Text = "Login - Modern"; // changed to make runtime identification obvious
+            ClientSize = new Size(520, 340);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+            Font = new Font("Segoe UI", 9);
+
+            // Title
+            var lblTitle = new Label
+            {
+                Text = "Welcome",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                AutoSize = true,
+                ForeColor = textColor,
+                Location = new Point(28, 18)
+            };
+
+            var lblSubtitle = new Label
+            {
+                Text = "Sign in to your account",
+                Font = new Font("Segoe UI", 9, FontStyle.Regular),
+                AutoSize = true,
+                ForeColor = Color.Gray,
+                Location = new Point(28, 54)
+            };
+
+            // Card container
+            var card = new Panel
+            {
+                Size = new Size(460, 220),
+                Location = new Point(28, 86),
+                BackColor = cardColor,
+                BorderStyle = BorderStyle.None
+            };
+            card.Padding = new Padding(12);
+            card.Anchor = AnchorStyles.None;
+
+            // Role
+            var lblRole = new Label { Text = "Role", Left = 12, Top = 12, Width = 60, ForeColor = textColor };
+            cboRole = new ComboBox { Left = 80, Top = 10, Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
+            cboRole.Items.AddRange(new string[] { "user", "seller" });
+            cboRole.SelectedIndex = 0;
+            cboRole.SelectedIndexChanged += CboRole_SelectedIndexChanged;
+            card.Controls.Add(lblRole);
+            card.Controls.Add(cboRole);
+
+            // Name
+            var lblName = new Label { Name = "lblName", Text = "Name", Left = 12, Top = 52, Width = 60, ForeColor = textColor };
+            txtName = new TextBox { Name = "txtName", Left = 80, Top = 50, Width = 340, BorderStyle = BorderStyle.FixedSingle, BackColor = Color.White };
+            txtName.TabIndex = 0;
+            card.Controls.Add(lblName);
+            card.Controls.Add(txtName);
+
+            // Email
+            var lblEmail = new Label { Name = "lblEmail", Text = "Email", Left = 12, Top = 92, Width = 60, Visible = false, ForeColor = textColor };
+            txtEmail = new TextBox { Name = "txtEmail", Left = 80, Top = 90, Width = 340, Visible = false, BorderStyle = BorderStyle.FixedSingle, BackColor = Color.White };
+            card.Controls.Add(lblEmail);
+            card.Controls.Add(txtEmail);
+
+            // Company
+            var lblCompany = new Label { Name = "lblCompany", Text = "Company", Left = 12, Top = 132, Width = 60, Visible = false, ForeColor = textColor };
+            txtCompany = new TextBox { Name = "txtCompany", Left = 80, Top = 130, Width = 340, Visible = false, BorderStyle = BorderStyle.FixedSingle, BackColor = Color.White };
+            card.Controls.Add(lblCompany);
+            card.Controls.Add(txtCompany);
+
+            // Password
+            var lblPass = new Label { Text = "Password", Left = 12, Top = 172, Width = 60, ForeColor = textColor };
+            txtPassword = new TextBox { Left = 80, Top = 170, Width = 200, UseSystemPasswordChar = true, BorderStyle = BorderStyle.FixedSingle, BackColor = Color.White };
+            txtPassword.TabIndex = 1;
+            card.Controls.Add(lblPass);
+            card.Controls.Add(txtPassword);
+
+            // Message
+            lblMessage = new Label { Left = 12, Top = 200, Width = 420, ForeColor = Color.FromArgb(180, 0, 0), TextAlign = ContentAlignment.MiddleCenter };
+            card.Controls.Add(lblMessage);
+
+            // Buttons
+            btnLogin = new Button
+            {
+                Text = "Login",
+                Left = 300,
+                Top = 166,
+                Width = 120,
+                BackColor = accent,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold)
+            };
+            btnLogin.FlatAppearance.BorderSize = 0;
+            btnLogin.TabIndex = 2;
+            btnLogin.Click += BtnLogin_Click;
+            btnLogin.MouseEnter += (s, e) => btnLogin.BackColor = ControlPaint.Light(accent);
+            btnLogin.MouseLeave += (s, e) => btnLogin.BackColor = accent;
+            card.Controls.Add(btnLogin);
+
+            btnRegister = new Button
+            {
+                Text = "Register",
+                Left = 300,
+                Top = 196,
+                Width = 120
+            };
+            btnRegister.Click += BtnRegister_Click;
+            card.Controls.Add(btnRegister);
+
+            lnkRegister = new LinkLabel
+            {
+                Text = "Register (alt)",
+                Left = 420,
+                Top = 200,
+                AutoSize = true,
+                LinkColor = accent,
+                ActiveLinkColor = ControlPaint.Light(accent),
+                DisabledLinkColor = Color.Gray
+            };
+            lnkRegister.TabIndex = 3;
+            lnkRegister.Click += LnkRegister_Click;
+            card.Controls.Add(lnkRegister);
+
+            // Add to form
+            Controls.Add(lblTitle);
+            Controls.Add(lblSubtitle);
+            Controls.Add(card);
+
+            // Keyboard behavior
+            AcceptButton = btnLogin;
+
+            // Basic focus behavior to clear messages
+            txtName.TextChanged += (s, e) => lblMessage.Text = string.Empty;
+            txtPassword.TextChanged += (s, e) => lblMessage.Text = string.Empty;
+        }
+
+        private void CboRole_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            var role = cboRole.SelectedItem as string;
+            var isSeller = role == "seller";
+            // toggle visibility by name
+            var card = Controls[2] as Panel;
+            if (card == null) return;
+            var lblName = card.Controls.Find("lblName", true).FirstOrDefault();
+            var txtNameCtrl = card.Controls.Find("txtName", true).FirstOrDefault();
+            var lblEmail = card.Controls.Find("lblEmail", true).FirstOrDefault();
+            var txtEmailCtrl = card.Controls.Find("txtEmail", true).FirstOrDefault();
+            var lblCompany = card.Controls.Find("lblCompany", true).FirstOrDefault();
+            var txtCompanyCtrl = card.Controls.Find("txtCompany", true).FirstOrDefault();
+            if (lblName != null) lblName.Visible = !isSeller;
+            if (txtNameCtrl != null) txtNameCtrl.Visible = !isSeller;
+            if (lblEmail != null) lblEmail.Visible = isSeller;
+            if (txtEmailCtrl != null) txtEmailCtrl.Visible = isSeller;
+            if (lblCompany != null) lblCompany.Visible = isSeller;
+            if (txtCompanyCtrl != null) txtCompanyCtrl.Visible = isSeller;
+        }
+
+        private void BtnRegister_Click(object? sender, EventArgs e)
+        {
+            var dlg = MessageBox.Show("Register as Service Provider? Click Yes for provider, No for regular user.", "Register", MessageBoxButtons.YesNoCancel);
+            if (dlg == DialogResult.Yes)
+            {
+                using var reg = new Forms.ServiceProvider.ProviderRegistrationForm();
+                reg.ShowDialog(this);
+            }
+            else if (dlg == DialogResult.No)
+            {
+                using var reg = new RegisterForm();
+                reg.ShowDialog(this);
+            }
+        }
+
+        private void LnkRegister_Click(object? sender, EventArgs e)
+        {
+            BtnRegister_Click(sender, e);
+        }
+
+        private void BtnLogin_Click(object? sender, EventArgs e)
+        {
+            lblMessage.Text = "";
+            var role = cboRole.SelectedItem as string ?? "user";
+            var dto = new LoginDTO { Role = role, Name = txtName.Text.Trim(), Email = txtEmail.Text.Trim(), CompanyName = txtCompany.Text.Trim(), Password = txtPassword.Text };
+
+            if (_loginService.Authenticate(dto, out var profile) && profile != null)
+            {
+                if (role == "seller")
+                {
+                    var seller = (Domain.DTO.SellerProfileDTO)profile;
+                    var frm = new Forms.ServiceProvider.ServiceProviderDashboardForm(seller);
+                    frm.Show();
+                    Hide();
+                    frm.FormClosed += (s, e) => { Show(); };
+                }
+                else
+                {
+                    var user = (Domain.DTO.UserProfileDTO)profile;
+                    var frm = new Forms.User.DashboardForm(user);
+                    frm.Show();
+                    Hide();
+                    frm.FormClosed += (s, e) => { Show(); };
+                }
+            }
+            else
+            {
+                lblMessage.Text = "Invalid credentials.";
+            }
+        }
+    }
+}

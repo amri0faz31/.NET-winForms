@@ -1,0 +1,16 @@
+﻿using System;
+using samp_01.Domain.DTO;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+ // Repository interface abstracts data access for User-related operations
+ public interface IUserRepository
+ {
+ bool ExistsByName(string name);
+ int AddUser(Domain.Entities.User user);
+ (int Id, string? Hash, string? Salt)? GetCredentialsByName(string name);
+ UserProfileDTO? GetProfileById(int id);
+ UserProfileDTO? GetProfileByName(string name);
+ }
+}

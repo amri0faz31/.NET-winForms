@@ -1,0 +1,53 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class UserProfileForm : Form
+    {
+        private readonly UserProfileService _profileService;
+        private readonly string _userName;
+
+        public UserProfileForm(string userName)
+        {
+            _profileService = new UserProfileService();
+            _userName = userName;
+
+            var accent = Color.FromArgb(10, 132, 255);
+            var background = Color.FromArgb(250, 250, 252);
+            var cardColor = Color.White;
+            var textColor = Color.FromArgb(34, 34, 34);
+
+            Text = "Profile";
+            ClientSize = new Size(480, 360);
+            StartPosition = FormStartPosition.CenterParent;
+            Font = new Font("Segoe UI", 9);
+            BackColor = background;
+
+            var user = _profileService.GetByName(userName);
+            if (user == null)
+            {
+                Controls.Add(new Label { Text = "User not found", AutoSize = true, ForeColor = Color.Red, Left = 20, Top = 20 });
+                return;
+            }
+
+            var lblTitle = new Label { Text = "Profile", Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = textColor, Left = 20, Top = 12, AutoSize = true };
+
+            var card = new Panel { Left = 20, Top = 50, Width = 420, Height = 240, BackColor = cardColor };
+            card.Padding = new Padding(12);
+
+            var lblName = new Label { Text = user.Name, Font = new Font("Segoe UI", 12, FontStyle.Bold), Left = 12, Top = 8, AutoSize = true, ForeColor = textColor };
+            var lblEmail = new Label { Text = $"Email: {user.Email}", Left = 12, Top = 44, AutoSize = true };
+            var lblAddress = new Label { Text = $"Address: {user.AddressLine1} {user.AddressLine2} {user.City} {user.PostalCode} {user.Country}", Left = 12, Top = 74, AutoSize = false, Width = 380 };
+            var lblCard = new Label { Text = $"Card: {user.CardMasked} (exp {user.CardExpiry})", Left = 12, Top = 120, AutoSize = true };
+            var lblCreated = new Label { Text = $"Member since: {user.CreatedAt:yyyy-MM-dd}", Left = 12, Top = 150, AutoSize = true, ForeColor = Color.Gray };
+
+            card.Controls.AddRange(new Control[] { lblName, lblEmail, lblAddress, lblCard, lblCreated });
+
+            Controls.AddRange(new Control[] { lblTitle, card });
+        }
+    }
+}

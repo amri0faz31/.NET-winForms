@@ -1,0 +1,51 @@
+# Project setup guide (simplified)
+
+This is a .NET8 Windows Forms app that uses MySQL and ADO.NET repositories. Follow this quickstart to configure, install, build, run, and publish.
+
+TL;DR quickstart
+1) Set the database connection string
+- Open `AppConfig.cs` and set:
+ - `public static string ConnectionString = "Server=localhost;Port=3306;Database=samp_01;Uid=root;Pwd=yourpassword;SslMode=None;";`
+
+2) Install tools and restore packages
+- Ensure .NET8 SDK is installed and Visual Studio2022 Desktop workload.
+- Install EF CLI (used to apply migrations once):
+ - `dotnet tool install --global dotnet-ef`
+- Restore packages:
+ - `dotnet restore`
+
+3) Create the MySQL database (one time)
+- Connect to MySQL and run:
+ - `CREATE DATABASE IF NOT EXISTS samp_01 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
+
+4) Apply migrations (one time)
+- Note: This app does NOT auto-run migrations at startup. Apply them once with EF CLI:
+ - From the project folder (where `samp_01.csproj` is):
+ - `dotnet ef database update`
+
+5) Build and run
+- Build: `dotnet build -c Debug`
+- Run: `dotnet run -c Debug`
+- Or press F5 in Visual Studio with `samp_01` as the startup project.
+
+6) Publish (optional)
+- Self-contained single-file for x64:
+ - `dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -p:PublishTrimmed=false`
+- Output: `bin/Release/net8.0-windows/win-x64/publish`
+
+FAQ
+- Do migrations run automatically?
+ - No. This WinForms app does not run EF migrations at startup. Run `dotnet ef database update` once to create/update tables.
+- What dependencies do I need?
+ - .NET8 SDK + VS2022 Desktop workload, MySQL Server8.x.
+ - NuGet dependencies are restored by `dotnet restore` (e.g., `MySql.Data`, EF Core packages used by migration classes). If EF provider is missing for your local CLI, add Pomelo:
+ - `dotnet add package Pomelo.EntityFrameworkCore.MySql`
+- Where are files stored?
+ - App saves attachments/deliveries under `data/orders/{orderId}/...` in the app folder.
+- File lock during publish/build
+ - Close any running `samp_01.exe` before publishing to avoid copy lock errors.
+
+What this is (for reference)
+- App type: Windows Forms (`net8.0-windows`, C#12)
+- Data: MySQL
+- Access: ADO.NET repositories + EF-style migration classes (raw SQL via `MigrationBuilder.Sql`)

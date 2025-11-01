@@ -1,0 +1,104 @@
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Services.ServiceProvider;
+
+namespace samp_01.Forms.ServiceProvider
+{
+         public class ServiceProviderPortfolioForm : Form
+         {
+             private readonly SellerProfileDTO _seller;
+             private readonly PortfolioService _service = new PortfolioService();
+             private Panel _host = null!;
+
+            public ServiceProviderPortfolioForm(SellerProfileDTO seller)
+            {
+             _seller = seller;
+             Text = "My Portfolio";
+             BackColor = Color.FromArgb(248,249,250);
+             Font = new Font("Segoe UI",9);
+             _host = new Panel { Dock = DockStyle.Fill, BackColor = BackColor, AutoScroll = true, Padding = new Padding(20) };
+             Controls.Add(_host);
+             Build();
+            }
+
+            private void Build()
+            {
+                 _host.Controls.Clear();
+                 var dto = _service.Get(_seller.Id);
+                 var title = new Label 
+                 { 
+                     Text = "Portfolio", Left =0, Top =0,
+                     AutoSize = true,
+                     Font = new Font("Segoe UI",14, FontStyle.Bold)
+                 };
+
+                 _host.Controls.Add(title);
+                 var y =40;
+                 var descLbl = new Label { Text = "Description:", Left =0, Top = y, AutoSize = true, Font = new Font("Segoe UI",9, FontStyle.Bold) }; _host.Controls.Add(descLbl);
+                 var desc = new TextBox { Left =100, Top = y -4, Width =420, Height =60, Multiline = true, Text = dto?.Description ?? "" }; _host.Controls.Add(desc); y +=70;
+                 var skillsLbl = new Label { Text = "Skills:", Left =0, Top = y, AutoSize = true, Font = new Font("Segoe UI",9, FontStyle.Bold) }; _host.Controls.Add(skillsLbl);
+                 var skills = new TextBox { Left =100, Top = y -4, Width =420, Height =40, Multiline = true, Text = dto?.Skills ?? "" }; _host.Controls.Add(skills); y +=50;
+                 var priceLbl = new Label { Text = "Price Range:", Left =0, Top = y, AutoSize = true, Font = new Font("Segoe UI",9, FontStyle.Bold) }; _host.Controls.Add(priceLbl);
+                 var min = new TextBox { Left =100, Top = y -4, Width =80, Text = dto?.PriceRangeMin?.ToString("0.##") ?? "" }; _host.Controls.Add(min);
+                 var max = new TextBox { Left =190, Top = y -4, Width =80, Text = dto?.PriceRangeMax?.ToString("0.##") ?? "" }; _host.Controls.Add(max); y +=40;
+                 var picLbl = new Label { Text = "Profile Pic:", Left =0, Top = y, AutoSize = true, Font = new Font("Segoe UI",9, FontStyle.Bold) }; _host.Controls.Add(picLbl);
+                 var picPath = new TextBox { Left =100, Top = y -4, Width =340, Text = dto?.ProfilePicPath ?? "" }; _host.Controls.Add(picPath);
+                 var btnBrowse = new Button { Text = "Browse", Left =450, Top = y -6, Width =70 }; _host.Controls.Add(btnBrowse);
+                 string? selectedPic = null;
+
+                 btnBrowse.Click += (s, e) => 
+                 { using var ofd = new OpenFileDialog 
+                    {
+                        Filter = "Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All files|*.*" 
+                    }; 
+                     if (ofd.ShowDialog(this) == DialogResult.OK) 
+                     { 
+                         selectedPic = ofd.FileName; picPath.Text = selectedPic;
+                     } 
+                 };
+                 y +=40;
+                 var btnSave = new Button 
+                 { 
+                     Text = "Save", 
+                     Left =100, Top = y, 
+                     Width =80 
+                 };
+
+                 btnSave.Click += (s, e) =>
+                 {
+                     decimal? minVal = null, maxVal = null; if (decimal.TryParse(min.Text, out var mv)) minVal = mv; if (decimal.TryParse(max.Text, out var xv)) maxVal = xv;
+                     _service.Save(_seller.Id, desc.Text.Trim(), minVal, maxVal, skills.Text.Trim(), string.IsNullOrWhiteSpace(picPath.Text) ? null : picPath.Text.Trim());
+                     MessageBox.Show("Saved.");
+                     Build();
+                 };
+                 _host.Controls.Add(btnSave);
+
+                 // Projects list
+                 y +=50;
+                 var projTitle = new Label { Text = "Projects", Left =0, Top = y, AutoSize = true, Font = new Font("Segoe UI",12, FontStyle.Bold) }; _host.Controls.Add(projTitle); y +=30;
+                 var flow = new FlowLayoutPanel { Left =0, Top = y, Width = _host.Width -40, Height =320, AutoScroll = true, WrapContents = true, FlowDirection = FlowDirection.LeftToRight, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
+                 foreach (var p in _service.ListProjects(_seller.Id))
+                 {
+                     var card = new Panel { Width =260, Height =160, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(8) };
+                     var name = new Label { Text = p.Title, Left =10, Top =10, Width =150, Font = new Font("Segoe UI",9, FontStyle.Bold) };
+                     var desc2 = new Label { Text = p.Description ?? "", Left =10, Top =35, Width =150, Height =70 };
+                     
+                
+                     if (!string.IsNullOrEmpty(p.ImagePath) && File.Exists(p.ImagePath))
+                     {
+                         var pic = new PictureBox { Left =170, Top =10, Width =80, Height =80, SizeMode = PictureBoxSizeMode.Zoom, ImageLocation = p.ImagePath, BorderStyle = BorderStyle.FixedSingle };
+                         card.Controls.Add(pic);
+                     }
+
+                     var btnDel = new Button { Text = "Delete", Left =10, Top =120, Width =70 };
+                     btnDel.Click += (s, e) => { if (MessageBox.Show("Delete this project?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes) { if (_service.DeleteProject(p.Id, _seller.Id)) { Build(); } } };
+                     card.Controls.Add(name); card.Controls.Add(desc2); card.Controls.Add(btnDel);
+                     flow.Controls.Add(card);
+                 }
+                 _host.Controls.Add(flow);
+            }
+         }
+}

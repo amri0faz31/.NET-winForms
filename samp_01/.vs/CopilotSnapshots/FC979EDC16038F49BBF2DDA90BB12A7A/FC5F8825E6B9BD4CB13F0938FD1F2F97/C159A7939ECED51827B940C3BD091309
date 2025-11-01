@@ -1,0 +1,114 @@
+﻿using System;
+using System.Data;
+using System.Linq;
+using MySql.Data.MySqlClient;
+using samp_01.Data;
+using samp_01.Domain.DTO;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+ public class AdoUserRepository : IUserRepository
+ {
+ private readonly string _connectionString;
+ public AdoUserRepository(string connectionString) => _connectionString = connectionString;
+
+ public bool ExistsByName(string name)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var obj = db.ExecuteScalar("SELECT COUNT(1) FROM users WHERE name = @name", new MySqlParameter("@name", name));
+ return Convert.ToInt32(obj ??0) >0;
+ }
+
+ public int AddUser(User user)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"INSERT INTO users (name, passwordhash, salt, email, addressline1, addressline2, city, state, postalcode, country, cardholdername, cardmasked, cardlast4, cardexpiry, createdat)
+ VALUES (@name,@hash,@salt,@email,@address1,@address2,@city,@state,@postal,@country,@cardholder,@cardmasked,@cardlast4,@cardexpiry,@now)";
+ var rows = db.ExecuteNonQuery(sql,
+ new MySqlParameter("@name", user.Name),
+ new MySqlParameter("@hash", user.PasswordHash),
+ new MySqlParameter("@salt", user.Salt),
+ new MySqlParameter("@email", user.Email ?? (object)DBNull.Value),
+ new MySqlParameter("@address1", user.AddressLine1 ?? (object)DBNull.Value),
+ new MySqlParameter("@address2", user.AddressLine2 ?? (object)DBNull.Value),
+ new MySqlParameter("@city", user.City ?? (object)DBNull.Value),
+ new MySqlParameter("@state", user.State ?? (object)DBNull.Value),
+ new MySqlParameter("@postal", user.PostalCode ?? (object)DBNull.Value),
+ new MySqlParameter("@country", user.Country ?? (object)DBNull.Value),
+ new MySqlParameter("@cardholder", user.CardHolderName ?? (object)DBNull.Value),
+ new MySqlParameter("@cardmasked", user.CardMasked ?? (object)DBNull.Value),
+ new MySqlParameter("@cardlast4", user.CardLast4 ?? (object)DBNull.Value),
+ new MySqlParameter("@cardexpiry", user.CardExpiry ?? (object)DBNull.Value),
+ new MySqlParameter("@now", DateTime.UtcNow)
+ );
+
+ if (rows >0)
+ {
+ // get last insert id
+ using var db2 = new AdoDbContext(_connectionString);
+ var idObj = db2.ExecuteScalar("SELECT LAST_INSERT_ID();");
+ return Convert.ToInt32(idObj);
+ }
+ return0;
+ }
+
+ public (int Id, string Hash, string Salt)? GetCredentialsByName(string name)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = "SELECT id, passwordhash, salt FROM users WHERE name = @name LIMIT1";
+ var list = db.Query(sql, r => (Id: r.GetInt32(0), Hash: r.IsDBNull(1) ? null : r.GetString(1), Salt: r.IsDBNull(2) ? null : r.GetString(2)), new MySqlParameter("@name", name));
+ return list.FirstOrDefault();
+ }
+
+ public UserProfileDTO? GetProfileById(int id)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"SELECT id, name, email, addressline1, addressline2, city, state, postalcode, country, cardmasked, cardlast4, cardexpiry, createdat
+ FROM users WHERE id = @id LIMIT1";
+ var list = db.Query(sql, r => {
+ var dto = new UserProfileDTO();
+ dto.Id = r.GetInt32(0);
+ dto.Name = r.GetString(1);
+ dto.Email = r.IsDBNull(2) ? null : r.GetString(2);
+ dto.AddressLine1 = r.IsDBNull(3) ? null : r.GetString(3);
+ dto.AddressLine2 = r.IsDBNull(4) ? null : r.GetString(4);
+ dto.City = r.IsDBNull(5) ? null : r.GetString(5);
+ dto.State = r.IsDBNull(6) ? null : r.GetString(6);
+ dto.PostalCode = r.IsDBNull(7) ? null : r.GetString(7);
+ dto.Country = r.IsDBNull(8) ? null : r.GetString(8);
+ dto.CardMasked = r.IsDBNull(9) ? null : r.GetString(9);
+ dto.CardLast4 = r.IsDBNull(10) ? null : r.GetString(10);
+ dto.CardExpiry = r.IsDBNull(11) ? null : r.GetString(11);
+ dto.CreatedAt = r.IsDBNull(12) ? DateTime.MinValue : r.GetDateTime(12);
+ return dto;
+ }, new MySqlParameter("@id", id));
+ return list.FirstOrDefault();
+ }
+
+ public UserProfileDTO? GetProfileByName(string name)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"SELECT id, name, email, addressline1, addressline2, city, state, postalcode, country, cardmasked, cardlast4, cardexpiry, createdat
+ FROM users WHERE name = @name LIMIT1";
+ var list = db.Query(sql, r => {
+ var dto = new UserProfileDTO();
+ dto.Id = r.GetInt32(0);
+ dto.Name = r.GetString(1);
+ dto.Email = r.IsDBNull(2) ? null : r.GetString(2);
+ dto.AddressLine1 = r.IsDBNull(3) ? null : r.GetString(3);
+ dto.AddressLine2 = r.IsDBNull(4) ? null : r.GetString(4);
+ dto.City = r.IsDBNull(5) ? null : r.GetString(5);
+ dto.State = r.IsDBNull(6) ? null : r.GetString(6);
+ dto.PostalCode = r.IsDBNull(7) ? null : r.GetString(7);
+ dto.Country = r.IsDBNull(8) ? null : r.GetString(8);
+ dto.CardMasked = r.IsDBNull(9) ? null : r.GetString(9);
+ dto.CardLast4 = r.IsDBNull(10) ? null : r.GetString(10);
+ dto.CardExpiry = r.IsDBNull(11) ? null : r.GetString(11);
+ dto.CreatedAt = r.IsDBNull(12) ? DateTime.MinValue : r.GetDateTime(12);
+ return dto;
+ }, new MySqlParameter("@name", name));
+ return list.FirstOrDefault();
+ }
+ }
+}

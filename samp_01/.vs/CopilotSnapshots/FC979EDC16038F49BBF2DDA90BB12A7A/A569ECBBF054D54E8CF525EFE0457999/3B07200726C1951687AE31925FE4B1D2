@@ -1,0 +1,42 @@
+﻿using Microsoft.EntityFrameworkCore;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data
+{
+    // DbContext for the application, managing User entities
+    public class AppDbContext : DbContext
+    {
+
+
+     //CLASS VARIABLE
+        private readonly string _connectionString;
+
+
+     //CLASS PROPERTIES AND METHODS
+
+
+        //dataset representing the Users table in the database
+        public DbSet<User> Users { get; set; } = null!;
+
+        //constructor accepting a connection string for database connectivity
+        //any class that uses AppDbContext must provide the connection string as argument
+        public AppDbContext(string connectionString) => _connectionString = connectionString;
+
+
+        //configure the database connection using the provided connection string
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString));
+            }
+        }
+
+        //create unique index on User.Name to prevent duplicate usernames
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();
+            base.OnModelCreating(modelBuilder);
+        }
+    }
+}

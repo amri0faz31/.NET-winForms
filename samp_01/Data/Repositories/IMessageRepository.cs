@@ -1,0 +1,16 @@
+using System.Collections.Generic;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+    public interface IMessageRepository
+    {
+        int Add(samp_01.Domain.Entities.Message m);
+        System.Collections.Generic.List<samp_01.Domain.Entities.Message> GetByOrder(int orderId);
+        // Direct messaging (orderless)
+        System.Collections.Generic.List<samp_01.Domain.Entities.Message> GetDirect(int meId, string meType, int peerId, string peerType);
+        System.Collections.Generic.List<(int PeerId, string PeerType, System.DateTime LastAt, string? Preview)> GetDirectConversations(int meId, string meType);
+        // New: delete a direct thread between user and seller
+        bool DeleteDirectThread(int userId, int sellerId);
+    }
+}

@@ -1,0 +1,28 @@
+﻿using samp_01.Data;
+
+namespace samp_01
+{
+    internal static class Program
+    {
+        /// <summary>
+        ///  The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            // To customize application configuration such as set high DPI settings or default font,
+            // see https://aka.ms/applicationconfiguration.
+            ApplicationConfiguration.Initialize();
+
+            var conn = AppConfig.ConnectionString;
+
+            // Create database/tables if missing (for simple demos). For production, prefer migrations.
+            using (var ctx = new AppDbContext(conn))
+            {
+                ctx.Database.EnsureCreated();
+            }
+
+            Application.Run(new LoginForm()); // or Application.Run(new LoginForm()) if you add the WinForms UI
+        }
+    }
+}

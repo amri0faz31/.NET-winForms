@@ -1,0 +1,49 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using samp_01.Data;
+
+#nullable disable
+
+namespace samp_01.Migrations
+{
+ [DbContext(typeof(AppDbContext))
+ [Migration("20251025_AddServicesAndSellers")]
+ public partial class AddServicesAndSellers : Migration
+ {
+ protected override void Up(MigrationBuilder migrationBuilder)
+ {
+ migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `services` (
+ `id` INT NOT NULL AUTO_INCREMENT,
+ `name` VARCHAR(200) NOT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `IX_Services_Name` (`name`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+ migrationBuilder.Sql(@"INSERT IGNORE INTO `services` (`name`) VALUES ('3D modeling'), ('Photography');");
+
+ migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `sellers` (
+ `id` INT NOT NULL AUTO_INCREMENT,
+ `name` VARCHAR(200) NOT NULL,
+ `email` VARCHAR(255) NOT NULL,
+ `passwordhash` VARCHAR(256) NOT NULL,
+ `salt` VARCHAR(128) NOT NULL,
+ `phone` VARCHAR(50) NULL,
+ `serviceid` INT NOT NULL,
+ `companyname` VARCHAR(255) NOT NULL,
+ `companyaddress` TEXT NULL,
+ `logopath` VARCHAR(512) NULL,
+ `createdat` DATETIME(6) NOT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `IX_Sellers_Email` (`email`),
+ CONSTRAINT `FK_Sellers_Service` FOREIGN KEY (`serviceid`) REFERENCES `services` (`id`) ON DELETE CASCADE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+ }
+
+ protected override void Down(MigrationBuilder migrationBuilder)
+ {
+ migrationBuilder.Sql("DROP TABLE IF EXISTS `sellers`;");
+ migrationBuilder.Sql("DROP TABLE IF EXISTS `services`;");
+ }
+ }
+}

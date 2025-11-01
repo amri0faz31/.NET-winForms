@@ -1,0 +1,340 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+using samp_01.Services.ServiceProvider;
+using samp_01.Services.Orders;
+
+namespace samp_01.Forms.User
+{
+    public class UserServicesForm : Form
+    {
+        private readonly UserProfileDTO _user;
+        private readonly IServiceRepository _serviceRepo = new AdoServiceRepository(AppConfig.ConnectionString);
+        private readonly ISellerRepository _sellerRepo = new AdoSellerRepository(AppConfig.ConnectionString);
+        private readonly PortfolioService _portfolioService = new PortfolioService();
+        private readonly Stack<Action> _nav = new Stack<Action>();
+        private Panel _host = null!;
+
+        private static readonly Color TitleColor = Color.FromArgb(45, 45, 48);
+        private static readonly Color TextColor = Color.FromArgb(80, 80, 80);
+        private static readonly Color CardBg = Color.White;
+        private static readonly Font TitleFont = new Font("Segoe UI", 18, FontStyle.Bold);
+        private static readonly Font CardTitleFont = new Font("Segoe UI", 12, FontStyle.Bold);
+        private static readonly Font BodyFont = new Font("Segoe UI", 9);
+
+        public UserServicesForm(UserProfileDTO user)
+        {
+            _user = user;
+            Text = "Services";
+            ClientSize = new Size(1000, 700);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = Color.FromArgb(248, 249, 250);
+            Font = BodyFont;
+
+            _host = new Panel { Dock = DockStyle.Fill, BackColor = BackColor, AutoScroll = true };
+            Controls.Add(_host);
+
+            ShowServices();
+        }
+
+        private static Image? LoadThumbnail(string path, int w, int h)
+        {
+            try
+            {
+                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var img = Image.FromStream(fs, false, false);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(img, new Rectangle(0, 0, w, h));
+                return bmp;
+            }
+            catch { return null; }
+        }
+
+        private Button CreateBackButton()
+        {
+            var btn = new Button
+            {
+                Text = "← Back",
+                Left = 20,
+                Top = 9,
+                Width = 100,
+                Height = 32,
+                BackColor = Color.Transparent,
+                FlatStyle = FlatStyle.Flat,
+                Font = BodyFont
+            };
+            btn.FlatAppearance.BorderColor = Color.FromArgb(200, 200, 200);
+            btn.FlatAppearance.BorderSize = 1;
+            btn.Click += (s, e) => { if (_nav.Count > 0) { var a = _nav.Pop(); a(); } };
+            return btn;
+        }
+
+        private Panel CreatePage(string title, bool showBack, out Panel content)
+        {
+            var root = new Panel { Dock = DockStyle.Fill, BackColor = _host.BackColor, AutoScroll = true, Padding = new Padding(20) };
+
+            // Add content first, then header, so header stays at the very top when Dock=Top
+            content = new Panel { Dock = DockStyle.Top, AutoSize = true, BackColor = Color.Transparent };
+            root.Controls.Add(content);
+
+            var header = new Panel { Dock = DockStyle.Top, Height = 50, BackColor = Color.Transparent };
+            if (showBack)
+            {
+                header.Controls.Add(CreateBackButton());
+            }
+            var lbl = new Label { Text = title, Left = showBack ? 140 : 0, Top = 10, AutoSize = true, Font = TitleFont, ForeColor = TitleColor };
+            header.Controls.Add(lbl);
+            root.Controls.Add(header);
+
+            return root;
+        }
+
+        private void LoadView(Control view)
+        {
+            _host.Controls.Clear();
+            _host.Controls.Add(view);
+        }
+
+        private void ShowServices()
+        {
+            var page = CreatePage("Available Services", false, out var body);
+
+            var flow = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                WrapContents = true,
+                FlowDirection = FlowDirection.LeftToRight,
+                BackColor = Color.Transparent
+            };
+
+            foreach (var svc in _serviceRepo.GetAll())
+            {
+                var card = new Panel { Width = 280, Height = 120, BackColor = CardBg, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(10), Padding = new Padding(15) };
+                var name = new Label { Text = svc.Name, Left = 0, Top = 0, Width = 250, Font = CardTitleFont, ForeColor = TitleColor };
+                var btn = new Button { Text = "View Providers", Left = 0, Top = 70, Width = 140, Height = 32, BackColor = Color.FromArgb(10, 132, 255), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = BodyFont };
+                btn.FlatAppearance.BorderSize = 0;
+                btn.Click += (s, e) => { _nav.Push(ShowServices); ShowServiceSellers(svc.Id, svc.Name); };
+                card.Controls.Add(name);
+                card.Controls.Add(btn);
+                flow.Controls.Add(card);
+            }
+
+            body.Controls.Add(flow);
+            LoadView(page);
+        }
+
+        private void ShowServiceSellers(int serviceId, string serviceName)
+        {
+            var page = CreatePage(serviceName + " - Service Providers", true, out var body);
+            // Ensure the body panel can host a fill-docked flow panel so items are visible
+            body.AutoSize = false;
+            body.Dock = DockStyle.Fill;
+
+            // Make sure the content panel can display the flow properly
+            body.AutoScroll = true;
+
+            // Use a vertical flow so multiple seller cards are stacked and visible
+            var flow = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoScroll = true,
+                WrapContents = false,
+                FlowDirection = FlowDirection.TopDown,
+                BackColor = Color.Transparent
+            };
+
+            var sellers = _sellerRepo.GetSellersByService(serviceId);
+            
+            foreach (var s in sellers)
+            {
+                var card = new Panel { Width = 320, Height = 200, BackColor = CardBg, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(10), Padding = new Padding(15) };
+
+                string? imgPath = !string.IsNullOrEmpty(s.LogoPath) && File.Exists(s.LogoPath)
+                    ? s.LogoPath
+                    : (!string.IsNullOrEmpty(s.PortfolioPicPath) && File.Exists(s.PortfolioPicPath) ? s.PortfolioPicPath : null);
+
+                if (!string.IsNullOrEmpty(imgPath))
+                {
+                    var thumb = LoadThumbnail(imgPath, 80, 80);
+                    if (thumb != null)
+                    {
+                        var pic = new PictureBox { Left = 220, Top = 15, Width = 80, Height = 80, SizeMode = PictureBoxSizeMode.Zoom, Image = thumb, BorderStyle = BorderStyle.FixedSingle };
+                        card.Controls.Add(pic);
+                    }
+                }
+
+                var name = new Label { Text = s.CompanyName, Left = 0, Top = 0, Width = 200, Font = CardTitleFont, ForeColor = TitleColor };
+                var desc = new Label { Text = s.ShortDescription ?? "No description available", Left = 0, Top = 30, Width = 200, Height = 60, ForeColor = TextColor };
+                var btn = new Button { Text = "View Portfolio", Left = 0, Top = 150, Width = 140, Height = 32, BackColor = Color.FromArgb(10, 132, 255), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = BodyFont };
+                btn.FlatAppearance.BorderSize = 0;
+                btn.Click += (sender, e) => { _nav.Push(() => ShowServiceSellers(serviceId, serviceName)); ShowSellerPortfolio(s.Id, s.CompanyName); };
+                card.Controls.Add(name);
+                card.Controls.Add(desc);
+                card.Controls.Add(btn);
+                flow.Controls.Add(card);
+            }
+
+            
+
+            // ensure flow is on top and visible
+            body.Controls.Add(flow);
+            flow.BringToFront();
+            LoadView(page);
+        }
+
+        private void ShowSellerPortfolio(int sellerId, string companyName)
+        {
+            var page = CreatePage(companyName + " - Portfolio", true, out var body);
+            // Ensure the content panel can host a fill-docked container when embedded
+            body.AutoSize = false;
+            body.Dock = DockStyle.Fill;
+            body.AutoScroll = true;
+
+            // Container that will host the portfolio content
+            var container = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, AutoScroll = true };
+
+            var portfolio = _portfolioService.Get(sellerId);
+            var seller = _sellerRepo.GetSellerEntityById(sellerId);
+
+            // Two-column layout: left = details, right = profile summary/picture
+            // Use Dock so layout works when the form is hosted inside dashboard panels
+            const int leftWidth =560;
+            const int rightWidth =320;
+            var leftCol = new Panel { Width = leftWidth, Dock = DockStyle.Left, BackColor = Color.Transparent, Padding = new Padding(8) };
+            var rightCol = new Panel { Width = rightWidth, Dock = DockStyle.Right, BackColor = Color.Transparent, Padding = new Padding(8) };
+
+            // Left column - stacked text sections
+            int y =0;
+            void AddSectionHeader(string text)
+            {
+                var hdr = new Label { Text = text, Left =0, Top = y, AutoSize = true, Font = CardTitleFont, ForeColor = TitleColor };
+                leftCol.Controls.Add(hdr);
+                y +=28;
+            }
+            void AddSectionBody(string text, int height =40)
+            {
+                var lbl = new Label { Text = text, Left =0, Top = y, Width = leftWidth -20, Height = height, ForeColor = TextColor };
+                lbl.AutoEllipsis = true;
+                leftCol.Controls.Add(lbl);
+                y += height +12;
+            }
+
+            AddSectionHeader("Description");
+            AddSectionBody(portfolio?.Description ?? "No description available",60);
+
+            AddSectionHeader("Skills & Expertise");
+            AddSectionBody(portfolio?.Skills ?? "No skills listed",40);
+
+            AddSectionHeader("Price Range");
+            string priceText = "Not specified";
+            if (portfolio != null && (portfolio.PriceRangeMin.HasValue || portfolio.PriceRangeMax.HasValue))
+            {
+                var min = portfolio.PriceRangeMin?.ToString("0.##") ?? "-";
+                var max = portfolio.PriceRangeMax?.ToString("0.##") ?? "-";
+                priceText = $"{min} - {max}";
+            }
+            AddSectionBody(priceText,24);
+
+            // Contact block
+            AddSectionHeader("Contact");
+            if (seller != null)
+            {
+                AddSectionBody($"Company: {seller.CompanyName}",22);
+                AddSectionBody($"Email: {seller.Email}",22);
+                AddSectionBody($"Phone: {seller.Phone ?? "Not provided"}",22);
+                AddSectionBody($"Address: {seller.CompanyAddress ?? "Not provided"}",36);
+            }
+            else
+            {
+                AddSectionBody("Seller profile not available",22);
+            }
+
+            // Right column - picture and quick info
+            if (!string.IsNullOrEmpty(portfolio?.ProfilePicPath) && File.Exists(portfolio.ProfilePicPath))
+            {
+                var thumb = LoadThumbnail(portfolio.ProfilePicPath,220,220);
+                if (thumb != null)
+                {
+                    var pic = new PictureBox { Left =0, Top =10, Width =220, Height =220, SizeMode = PictureBoxSizeMode.Zoom, Image = thumb, BorderStyle = BorderStyle.FixedSingle };
+                    rightCol.Controls.Add(pic);
+                }
+            }
+
+            var summaryTop =240;
+            var lblCompany = new Label { Text = seller?.CompanyName ?? companyName, Left =0, Top = summaryTop, AutoSize = true, Font = CardTitleFont, ForeColor = TitleColor };
+            rightCol.Controls.Add(lblCompany);
+            summaryTop +=30;
+
+            var lblService = new Label { Text = $"Service ID: {seller?.ServiceId}", Left =0, Top = summaryTop, AutoSize = true, ForeColor = TextColor };
+            rightCol.Controls.Add(lblService);
+
+            // Request button
+            var btnRequest = new Button { Text = "Request Service", Left =0, Top = summaryTop +40, Width =140, Height =36, BackColor = Color.FromArgb(10,132,255), ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnRequest.FlatAppearance.BorderSize =0;
+            btnRequest.Click += (s, e) => { using var dlg = new RequestOrderDialog(companyName); if (dlg.ShowDialog(this) == DialogResult.OK) { var svcId = seller?.ServiceId ??0; var orderSvc = new OrderService(); var title = companyName + " - Service Request"; var orderId = orderSvc.CreateRequest(_user.Id, sellerId, svcId, title, dlg.Description); if (orderId >0) MessageBox.Show("Your request has been submitted.", "Request Sent", MessageBoxButtons.OK, MessageBoxIcon.Information); else MessageBox.Show("Failed to submit request.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); } };
+            rightCol.Controls.Add(btnRequest);
+
+            // Assemble columns into container
+            container.Controls.Add(leftCol);
+            container.Controls.Add(rightCol);
+
+            // Projects section below columns
+            var projectsTitle = new Label { Text = "Past Projects", AutoSize = true, Font = TitleFont, ForeColor = TitleColor, Dock = DockStyle.Top, Padding = new Padding(8, Math.Max(leftCol.Height, rightCol.Height) +12,0,0) };
+            container.Controls.Add(projectsTitle);
+
+            var projectsFlow = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true, FlowDirection = FlowDirection.LeftToRight, BackColor = Color.Transparent, Padding = new Padding(8) };
+            foreach (var p in _portfolioService.ListProjects(sellerId))
+            {
+                var card = new Panel { Width =280, Height =180, BackColor = CardBg, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(10), Padding = new Padding(15) };
+                var name = new Label { Text = p.Title, Left =0, Top =0, Width =150, Font = CardTitleFont, ForeColor = TitleColor };
+                var desc = new Label { Text = p.Description ?? "No description available", Left =0, Top =25, Width =150, Height =70, ForeColor = TextColor };
+                if (!string.IsNullOrEmpty(p.ImagePath) && File.Exists(p.ImagePath))
+                {
+                    var thumb = LoadThumbnail(p.ImagePath, 80, 80);
+                    if (thumb != null)
+                    {
+                        var pic = new PictureBox { Left =170, Top =10, Width =80, Height =80, SizeMode = PictureBoxSizeMode.Zoom, Image = thumb, BorderStyle = BorderStyle.FixedSingle };
+                        card.Controls.Add(pic);
+                    }
+                }
+                card.Controls.Add(name);
+                card.Controls.Add(desc);
+                projectsFlow.Controls.Add(card);
+            }
+
+            container.Controls.Add(projectsFlow);
+
+            body.Controls.Add(container);
+            LoadView(page);
+        }
+    }
+
+    // Simple dialog to enter request description
+    internal class RequestOrderDialog : Form
+    {
+        private TextBox _txt;
+        public string? Description => string.IsNullOrWhiteSpace(_txt.Text) ? null : _txt.Text.Trim();
+        public RequestOrderDialog(string company)
+        {
+            Text = $"Request Service - {company}";
+            ClientSize = new Size(480, 240);
+            StartPosition = FormStartPosition.CenterParent;
+            Font = new Font("Segoe UI", 9);
+            var lbl = new Label { Text = "Describe your request", Left = 12, Top = 16, AutoSize = true };
+            _txt = new TextBox { Left = 12, Top = 40, Width = 456, Height = 120, Multiline = true, ScrollBars = ScrollBars.Vertical };
+            var ok = new Button { Text = "Send", Left = 308, Top = 180, Width = 80, DialogResult = DialogResult.OK };
+            var cancel = new Button { Text = "Cancel", Left = 396, Top = 180, Width = 80, DialogResult = DialogResult.Cancel };
+            Controls.AddRange(new Control[] { lbl, _txt, ok, cancel });
+            AcceptButton = ok; CancelButton = cancel;
+        }
+    }
+}

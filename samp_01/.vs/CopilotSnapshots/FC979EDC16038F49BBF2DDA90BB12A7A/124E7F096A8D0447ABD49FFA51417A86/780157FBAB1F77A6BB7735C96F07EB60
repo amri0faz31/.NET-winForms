@@ -1,0 +1,37 @@
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using samp_01.Data.Repositories;
+using samp_01.Domain.DTO;
+using samp_01.Helpers;
+
+namespace samp_01.Services.User
+{
+    // Service for user login and authentication
+    public class LoginService
+     {
+         private readonly IUserRepository _repo;
+
+        //method injection constructor 
+         public LoginService() : this(new AdoUserRepository(AppConfig.ConnectionString)) { }
+
+        //constructor with repository injection for testing
+        public LoginService(IUserRepository repo) { _repo = repo; }
+
+        // Authenticate user and retrieve profile
+        public bool Authenticate(LoginDTO dto, [NotNullWhen(true)] out UserProfileDTO? profile)
+         {
+             profile = null;
+             if (dto == null) return false;
+
+             var cred = _repo.GetCredentialsByName(dto.Name);
+             if (cred == null) return false;
+
+            // ensure hash and salt are present
+            if (cred.Value.Hash == null || cred.Value.Salt == null) return false;
+
+             if (!PasswordHelper.VerifyPassword(dto.Password, cred.Value.Salt, cred.Value.Hash)) return false;
+             profile = _repo.GetProfileById(cred.Value.Id);
+             return profile != null;
+         }
+     }
+}

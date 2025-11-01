@@ -1,0 +1,101 @@
+﻿using System;
+using System.Linq;
+using samp_01.Data;
+using samp_01.Domain.Entities;
+using samp_01.Helpers;
+
+
+// service class to handle frontend user operations(register, login, etc)
+// interacts with the database via AppDbContext
+//includes methods for registering new users and validating existing users
+namespace samp_01.Services.User
+{
+    using DomainUser = samp_01.Domain.Entities.User;
+
+    public class UserService
+        {
+            private readonly string _connectionString;
+        //constructor to initialize the service with a connection string from AppConfig
+        public UserService()
+        {
+            _connectionString = AppConfig.ConnectionString;
+         }
+
+        //method for registration with password hashing and duplicate user check
+        // password hashing responsibility is done by  PasswordHelper on Helpers/PasswordHelper.cs
+        public bool Register(string name, string password, string? email,
+ string? addressLine1, string? addressLine2, string? city, string? state, string? postalCode, string? country,
+ string? cardHolderName, string? cardNumber, string? cardExpiry, out string? error)
+ {
+ error = null;
+ if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
+ {
+ error = "Name and password required.";
+ return false;
+ }
+
+ using var ctx = new AppDbContext(_connectionString);
+ if (ctx.Users.Any(u => u.Name == name))
+ {
+ error = "User already exists.";
+ return false;
+ }
+
+ var (hash, salt) = PasswordHelper.HashPassword(password);
+ var user = new DomainUser
+ {
+ Name = name,
+ PasswordHash = hash,
+ Salt = salt,
+ Email = email,
+ AddressLine1 = addressLine1,
+ AddressLine2 = addressLine2,
+ City = city,
+ State = state,
+ PostalCode = postalCode,
+ Country = country,
+ CardHolderName = cardHolderName,
+ CardLast4 = MaskCardLast4(cardNumber),
+ CardMasked = MaskCardNumber(cardNumber),
+ CardExpiry = cardExpiry,
+ CreatedAt = DateTime.UtcNow
+ };
+ ctx.Users.Add(user);
+ ctx.SaveChanges();
+ return true;
+ }
+
+        // method for validating user credentials during login
+        public bool Validate(string name, string password)
+        {
+                using var ctx = new AppDbContext(_connectionString);
+                var user = ctx.Users.SingleOrDefault(u => u.Name == name);
+                if (user == null) return false;
+                return PasswordHelper.VerifyPassword(password, user.Salt, user.PasswordHash);
+        }
+
+        public DomainUser? GetByName(string name)
+        {
+ using var ctx = new AppDbContext(_connectionString);
+ return ctx.Users.SingleOrDefault(u => u.Name == name);
+ }
+
+ private static string? MaskCardNumber(string? cardNumber)
+ {
+ if (string.IsNullOrWhiteSpace(cardNumber)) return null;
+ // only keep last4, mask rest
+ var digits = new string(cardNumber.Where(char.IsDigit).ToArray());
+ if (digits.Length <=4) return digits;
+ return new string('*', digits.Length -4) + digits.Substring(digits.Length -4);
+ }
+
+ private static string? MaskCardLast4(string? cardNumber)
+ {
+ if (string.IsNullOrWhiteSpace(cardNumber)) return null;
+ var digits = new string(cardNumber.Where(char.IsDigit).ToArray());
+ if (digits.Length <=4) return digits;
+ return digits.Substring(digits.Length -4);
+ }
+    }
+
+}

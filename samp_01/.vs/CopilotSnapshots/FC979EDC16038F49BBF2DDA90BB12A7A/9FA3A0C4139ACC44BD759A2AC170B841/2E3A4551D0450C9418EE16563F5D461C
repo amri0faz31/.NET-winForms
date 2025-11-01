@@ -1,0 +1,37 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure; // for DbContextAttribute
+using Microsoft.EntityFrameworkCore.Migrations;
+using samp_01.Helpers; // PasswordHelper
+
+#nullable disable
+
+namespace samp_01.Migrations
+{
+     [DbContext(typeof(samp_01.Data.AppDbContext))]
+     [Migration("20251026_AddAdmins_SeedRoot")]
+     public partial class AddAdmins_SeedRoot : Migration
+         {
+         protected override void Up(MigrationBuilder migrationBuilder)
+         {
+             migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `admins` (
+             `id` INT NOT NULL AUTO_INCREMENT,
+             `name` VARCHAR(100) NOT NULL,
+             `passwordhash` VARCHAR(256) NOT NULL,
+             `salt` VARCHAR(128) NOT NULL,
+             `createdat` DATETIME(6) NOT NULL,
+             PRIMARY KEY (`id`),
+             UNIQUE KEY `IX_Admins_Name` (`name`)
+             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+             // Seed a hard-coded admin (name: admin, password: Admin@123)
+             var pair = PasswordHelper.HashPassword("Admin@123");
+             var insertSql = $"INSERT IGNORE INTO `admins` (`name`, `passwordhash`, `salt`, `createdat`) VALUES ('admin', '{pair.Hash}', '{pair.Salt}', NOW(6));";
+             migrationBuilder.Sql(insertSql);
+         }
+
+         protected override void Down(MigrationBuilder migrationBuilder)
+         {
+             migrationBuilder.Sql("DROP TABLE IF EXISTS `admins`;");
+         }
+     }
+}

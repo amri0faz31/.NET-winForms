@@ -1,0 +1,169 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+ public class LoginForm : Form
+ {
+ private TextBox txtName;
+ private TextBox txtPassword;
+ private Button btnLogin;
+ private LinkLabel lnkRegister;
+ private Label lblMessage;
+ private readonly LoginService _loginService;
+
+ public LoginForm()
+ {
+ _loginService = new LoginService();
+
+ // Modern palette
+ var accent = Color.FromArgb(10,132,255);
+ var background = Color.FromArgb(250,250,252);
+ var cardColor = Color.White;
+ var textColor = Color.FromArgb(34,34,34);
+
+ Text = "Login";
+ ClientSize = new Size(420,300);
+ StartPosition = FormStartPosition.CenterScreen;
+ BackColor = background;
+ Font = new Font("Segoe UI",9);
+
+ // Title
+ var lblTitle = new Label
+ {
+ Text = "Welcome",
+ Font = new Font("Segoe UI",18, FontStyle.Bold),
+ AutoSize = true,
+ ForeColor = textColor,
+ Location = new Point(28,18)
+ };
+
+ var lblSubtitle = new Label
+ {
+ Text = "Sign in to your account",
+ Font = new Font("Segoe UI",9, FontStyle.Regular),
+ AutoSize = true,
+ ForeColor = Color.Gray,
+ Location = new Point(28,54)
+ };
+
+ // Card container
+ var card = new Panel
+ {
+ Size = new Size(360,180),
+ Location = new Point(28,86),
+ BackColor = cardColor,
+ BorderStyle = BorderStyle.None
+ };
+ card.Padding = new Padding(12);
+ card.Anchor = AnchorStyles.None;
+
+ // Name
+ var lblName = new Label { Text = "Name", Left =12, Top =12, Width =60, ForeColor = textColor };
+ txtName = new TextBox { Left =12 +60, Top =10, Width =260, BorderStyle = BorderStyle.FixedSingle, BackColor = Color.White };
+ txtName.TabIndex =0;
+
+ // Password
+ var lblPass = new Label { Text = "Password", Left =12, Top =52, Width =60, ForeColor = textColor };
+ txtPassword = new TextBox { Left =12 +60, Top =50, Width =260, UseSystemPasswordChar = true, BorderStyle = BorderStyle.FixedSingle, BackColor = Color.White };
+ txtPassword.TabIndex =1;
+
+ // Message
+ lblMessage = new Label { Left =12, Top =92, Width =320, ForeColor = Color.FromArgb(180,0,0), TextAlign = ContentAlignment.MiddleCenter };
+
+ // Buttons
+ btnLogin = new Button
+ {
+ Text = "Login",
+ Left =12 +60,
+ Top =116,
+ Width =120,
+ BackColor = accent,
+ ForeColor = Color.White,
+ FlatStyle = FlatStyle.Flat,
+ Font = new Font("Segoe UI",9, FontStyle.Bold)
+ };
+ btnLogin.FlatAppearance.BorderSize =0;
+ btnLogin.TabIndex =2;
+ btnLogin.Click += BtnLogin_Click;
+ btnLogin.MouseEnter += (s, e) => btnLogin.BackColor = ControlPaint.Light(accent);
+ btnLogin.MouseLeave += (s, e) => btnLogin.BackColor = accent;
+
+ lnkRegister = new LinkLabel
+ {
+ Text = "Register",
+ Left =12 +60 +140,
+ Top =120,
+ AutoSize = true,
+ LinkColor = accent,
+ ActiveLinkColor = ControlPaint.Light(accent),
+ DisabledLinkColor = Color.Gray
+ };
+ lnkRegister.TabIndex =3;
+ lnkRegister.Click += LnkRegister_Click;
+
+ // Add to card
+ card.Controls.Add(lblName);
+ card.Controls.Add(txtName);
+ card.Controls.Add(lblPass);
+ card.Controls.Add(txtPassword);
+ card.Controls.Add(lblMessage);
+ card.Controls.Add(btnLogin);
+ card.Controls.Add(lnkRegister);
+
+ // Add to form
+ Controls.Add(lblTitle);
+ Controls.Add(lblSubtitle);
+ Controls.Add(card);
+
+ // Keyboard behavior
+ AcceptButton = btnLogin;
+
+ // Basic focus behavior to clear messages
+ txtName.TextChanged += (s, e) => lblMessage.Text = string.Empty;
+ txtPassword.TextChanged += (s, e) => lblMessage.Text = string.Empty;
+ }
+
+ private void LnkRegister_Click(object? sender, EventArgs e)
+ {
+ using var reg = new RegisterForm();
+ reg.ShowDialog(this);
+ }
+
+ private void BtnLogin_Click(object? sender, EventArgs e)
+ {
+ lblMessage.Text = "";
+ var name = txtName.Text.Trim();
+ var pass = txtPassword.Text;
+
+ if (string.IsNullOrWhiteSpace(name))
+ {
+ lblMessage.Text = "Name required.";
+ return;
+ }
+
+ try
+ {
+ var dto = new LoginDTO { Name = name, Password = pass };
+ if (_loginService.Authenticate(dto, out var profile) && profile != null)
+ {
+ var dashboard = new DashboardForm(profile);
+ dashboard.Show();
+ Hide();
+ dashboard.FormClosed += (s, ev) => { Show(); txtPassword.Clear(); };
+ }
+ else
+ {
+ lblMessage.Text = "Invalid name or password.";
+ }
+ }
+ catch (Exception ex)
+ {
+ lblMessage.Text = "Error: " + ex.Message;
+ }
+ }
+ }
+}

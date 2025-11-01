@@ -1,0 +1,382 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+using samp_01.Services.ServiceProvider;
+
+namespace samp_01.Forms.User
+{
+    public class DashboardForm : Form
+    {
+        private Button btnLogout;
+        private Button btnHome;
+        private Button btnProfile;
+        private Button btnServices;
+
+        private Panel _pnlSidebar = null!;
+        private Panel _pnlMain = null!;
+        private Control? _currentView;
+        private readonly Stack<Action> _nav = new Stack<Action>();
+
+        private readonly UserProfileDTO _profile;
+        private readonly IServiceRepository _serviceRepo = new AdoServiceRepository(AppConfig.ConnectionString);
+        private readonly ISellerRepository _sellerRepo = new AdoSellerRepository(AppConfig.ConnectionString);
+        private readonly PortfolioService _portfolioService = new PortfolioService();
+
+        public DashboardForm(UserProfileDTO profile)
+        {
+            _profile = profile;
+
+            var background = Color.FromArgb(248, 249, 250);
+            var sidebar = Color.FromArgb(45, 45, 48);
+            var headerColor = Color.FromArgb(37, 37, 38);
+
+            Text = "Dashboard";
+            ClientSize = new Size(900, 520);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+
+            // Sidebar
+            _pnlSidebar = new Panel { Left = 0, Top = 0, Width = 200, Height = ClientSize.Height, BackColor = sidebar };
+
+            // Sidebar header
+            var lblHeader = new Label
+            {
+                Text = "DASHBOARD",
+                Left = 0,
+                Top = 0,
+                Width = 200,
+                Height = 80,
+                BackColor = headerColor,
+                ForeColor = Color.White,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            _pnlSidebar.Controls.Add(lblHeader);
+
+            btnHome = CreateSidebarButton("Home", 90, 45);
+            btnHome.Click += (s, e) => { _nav.Clear(); ShowHome(); };
+
+            btnProfile = CreateSidebarButton("Profile", 135, 45);
+            btnProfile.Click += (s, e) => { _nav.Clear(); ShowProfile(); };
+
+            btnServices = CreateSidebarButton("Services", 180, 45);
+            btnServices.Click += (s, e) => { _nav.Clear(); ShowServices(); };
+
+            btnLogout = CreateSidebarButton("Logout", ClientSize.Height - 70, 45);
+            btnLogout.Click += (s, e) => Close();
+            btnLogout.BackColor = Color.FromArgb(60, 60, 60);
+            btnLogout.ForeColor = Color.FromArgb(220, 120, 120);
+
+            _pnlSidebar.Controls.AddRange(new Control[] { btnHome, btnProfile, btnServices, btnLogout });
+
+            // Main area - will host the selected view
+            _pnlMain = new Panel { Left = 200, Top = 0, Width = ClientSize.Width - 200, Height = ClientSize.Height, BackColor = background, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
+
+            Controls.AddRange(new Control[] { _pnlSidebar, _pnlMain });
+
+            // Default view
+            ShowHome();
+        }
+
+        private Button CreateSidebarButton(string text, int top, int height)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Left = 0,
+                Top = top,
+                Width = 200,
+                Height = height,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(20, 0, 0, 0),
+                Font = new Font("Segoe UI", 9),
+                ImageAlign = ContentAlignment.MiddleLeft
+            };
+
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(62, 62, 66);
+            btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 120, 215);
+
+            return btn;
+        }
+
+        private static Image? LoadThumbnail(string path, int w, int h)
+        {
+            try
+            {
+                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var img = Image.FromStream(fs, false, false);
+                var bmp = new Bitmap(w, h);
+                using var g = Graphics.FromImage(bmp);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(img, new Rectangle(0, 0, w, h));
+                return bmp;
+            }
+            catch { return null; }
+        }
+
+        private Button CreateBackButton()
+        {
+            var btn = new Button { Text = "← Back", Left = 20, Top = 10, Width = 80 };
+            btn.Click += (s, e) => { if (_nav.Count > 0) { var action = _nav.Pop(); action(); } };
+            return btn;
+        }
+
+        private void ShowHome()
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+
+            // Welcome card
+            var welcomeCard = new Panel
+            {
+                Left = 30,
+                Top = 30,
+                Width = _pnlMain.Width - 60,
+                Height = 140,
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            var lblWelcome = new Label
+            {
+                Text = $"Welcome back,",
+                Left = 25,
+                Top = 25,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 14),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            var lblName = new Label
+            {
+                Text = _profile.Name,
+                Left = 25,
+                Top = 55,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+
+            var lblRole = new Label
+            {
+                Text = "User Account",
+                Left = 25,
+                Top = 90,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(100, 100, 100)
+            };
+
+            welcomeCard.Controls.Add(lblWelcome);
+            welcomeCard.Controls.Add(lblName);
+            welcomeCard.Controls.Add(lblRole);
+            panel.Controls.Add(welcomeCard);
+
+            // Quick stats section
+            var statsPanel = new Panel
+            {
+                Left = 30,
+                Top = 190,
+                Width = _pnlMain.Width - 60,
+                Height = 120,
+                BackColor = Color.Transparent
+            };
+
+            var lblStats = new Label
+            {
+                Text = "Your Overview",
+                Left = 0,
+                Top = 0,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.FromArgb(45, 45, 48)
+            };
+            statsPanel.Controls.Add(lblStats);
+
+            // Add some placeholder stats (replace with real data)
+            var lblServices = new Label
+            {
+                Text = "Active Services: 0",
+                Left = 0,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblServices);
+
+            var lblBookings = new Label
+            {
+                Text = "Active Bookings: 0",
+                Left = 200,
+                Top = 35,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(80, 80, 80)
+            };
+            statsPanel.Controls.Add(lblBookings);
+
+            panel.Controls.Add(statsPanel);
+            LoadView(panel);
+        }
+
+        private void ShowProfile()
+        {
+            // Embed UserProfileForm into the main panel
+            var prof = new UserProfileForm(_profile.Name)
+            {
+                TopLevel = false,
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill
+            };
+            LoadView(prof);
+            prof.Show();
+        }
+
+        // Services list as cards
+        private void ShowServices()
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+            var back = CreateBackButton(); panel.Controls.Add(back);
+            var title = new Label { Text = "Services", Left = 120, Top = 14, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(title);
+            var flow = new FlowLayoutPanel { Left = 20, Top = 50, Width = _pnlMain.Width - 40, Height = _pnlMain.Height - 70, AutoScroll = true, WrapContents = true, FlowDirection = FlowDirection.LeftToRight };
+            foreach (var svc in _serviceRepo.GetAll())
+            {
+                var card = new Panel { Width = 220, Height = 110, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(8) };
+                var name = new Label { Text = svc.Name, Left = 10, Top = 10, Width = 200, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+                var btn = new Button { Text = "View", Left = 10, Top = 70, Width = 80 };
+                btn.Click += (s, e) => { _nav.Push(ShowServices); ShowServiceSellers(svc.Id, svc.Name); };
+                card.Controls.Add(name); card.Controls.Add(btn);
+                flow.Controls.Add(card);
+            }
+            panel.Controls.Add(flow);
+            LoadView(panel);
+        }
+
+        // Sellers for a service
+        private void ShowServiceSellers(int serviceId, string serviceName)
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor };
+            var back = CreateBackButton(); panel.Controls.Add(back);
+            var title = new Label { Text = serviceName + " - Sellers", Left = 120, Top = 14, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(title);
+            var flow = new FlowLayoutPanel { Left = 20, Top = 50, Width = _pnlMain.Width - 40, Height = _pnlMain.Height - 70, AutoScroll = true, WrapContents = true, FlowDirection = FlowDirection.LeftToRight };
+            var sellers = _sellerRepo.GetSellersByService(serviceId);
+            foreach (var s in sellers)
+            {
+                var card = new Panel { Width = 300, Height = 180, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(8) };
+                // show seller logo prominently, fall back to portfolio picture, then nothing
+                string? imgPath = !string.IsNullOrEmpty(s.LogoPath) && File.Exists(s.LogoPath) ? s.LogoPath : (!string.IsNullOrEmpty(s.PortfolioPicPath) && File.Exists(s.PortfolioPicPath) ? s.PortfolioPicPath : null);
+                if (!string.IsNullOrEmpty(imgPath))
+                {
+                    var thumb = LoadThumbnail(imgPath, 90, 90);
+                    if (thumb != null)
+                    {
+                        var pic = new PictureBox { Left = 200, Top = 10, Width = 90, Height = 90, SizeMode = PictureBoxSizeMode.Zoom, Image = thumb, BorderStyle = BorderStyle.FixedSingle };
+                        card.Controls.Add(pic);
+                    }
+                }
+                var name = new Label { Text = s.CompanyName, Left = 10, Top = 10, Width = 180, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+                var desc = new Label { Text = s.ShortDescription ?? "", Left = 10, Top = 35, Width = 180, Height = 90 };
+                var btn = new Button { Text = "Open", Left = 10, Top = 140, Width = 80 };
+                btn.Click += (sender, e) => { _nav.Push(() => ShowServiceSellers(serviceId, serviceName)); ShowSellerPortfolio(s.Id, s.CompanyName); };
+                card.Controls.Add(name); card.Controls.Add(desc); card.Controls.Add(btn);
+                flow.Controls.Add(card);
+            }
+            panel.Controls.Add(flow);
+            LoadView(panel);
+        }
+
+        // Seller portfolio viewer (read-only)
+        private void ShowSellerPortfolio(int sellerId, string companyName)
+        {
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = _pnlMain.BackColor, AutoScroll = true };
+            var back = CreateBackButton(); panel.Controls.Add(back);
+            var title = new Label { Text = companyName + " - Portfolio", Left = 120, Top = 14, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(title);
+            var y = 50;
+            var portfolio = _portfolioService.Get(sellerId);
+            if (portfolio != null)
+            {
+                var top = new Panel { Left = 20, Top = y, Width = _pnlMain.Width - 40, Height = 180, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
+                var hdr1 = new Label { Text = "Description", Left = 20, Top = 10, AutoSize = true, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+                var desc = new Label { Text = portfolio.Description ?? "", Left = 20, Top = 30, Width = 520, Height = 100 };
+                top.Controls.Add(hdr1); top.Controls.Add(desc);
+                var hdr2 = new Label { Text = "Profile Picture", Left = 560, Top = 10, AutoSize = true, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+                if (!string.IsNullOrEmpty(portfolio.ProfilePicPath) && File.Exists(portfolio.ProfilePicPath))
+                {
+                    var thumb = LoadThumbnail(portfolio.ProfilePicPath, 120, 120);
+                    if (thumb != null)
+                    {
+                        var pic = new PictureBox { Left = 560, Top = 30, Width = 120, Height = 120, SizeMode = PictureBoxSizeMode.Zoom, Image = thumb, BorderStyle = BorderStyle.FixedSingle };
+                        top.Controls.Add(pic);
+                    }
+                }
+                panel.Controls.Add(top);
+                y += 200;
+            }
+
+            var projectsTitle = new Label { Text = "Past Projects", Left = 20, Top = y, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(projectsTitle); y += 30;
+            var flow = new FlowLayoutPanel { Left = 20, Top = y, Width = _pnlMain.Width - 40, Height = 260, AutoScroll = true, WrapContents = true, FlowDirection = FlowDirection.LeftToRight };
+            foreach (var p in _portfolioService.ListProjects(sellerId))
+            {
+                var card = new Panel { Width = 260, Height = 160, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Margin = new Padding(8) };
+                var name = new Label { Text = p.Title, Left = 10, Top = 10, Width = 150, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+                var desc = new Label { Text = p.Description ?? "", Left = 10, Top = 35, Width = 150, Height = 70 };
+                if (!string.IsNullOrEmpty(p.ImagePath) && File.Exists(p.ImagePath))
+                {
+                    var thumb = LoadThumbnail(p.ImagePath, 80, 80);
+                    if (thumb != null)
+                    {
+                        var pic = new PictureBox { Left = 170, Top = 10, Width = 80, Height = 80, SizeMode = PictureBoxSizeMode.Zoom, Image = thumb, BorderStyle = BorderStyle.FixedSingle };
+                        card.Controls.Add(pic);
+                    }
+                }
+                card.Controls.Add(name); card.Controls.Add(desc);
+                flow.Controls.Add(card);
+            }
+            panel.Controls.Add(flow);
+            y += 300;
+
+            // Company details from sellers table
+            var companyTitle = new Label { Text = "Company Details", Left = 20, Top = y, AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            panel.Controls.Add(companyTitle); y += 30;
+            var seller = _sellerRepo.GetSellerEntityById(sellerId);
+            if (seller != null)
+            {
+                var details = new Panel { Left = 20, Top = y, Width = _pnlMain.Width - 40, Height = 150, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle, AutoScroll = true };
+                details.Controls.Add(new Label { Text = $"Company Name: {seller.CompanyName}", Left = 20, Top = 20, AutoSize = true });
+                details.Controls.Add(new Label { Text = $"Email: {seller.Email}", Left = 20, Top = 45, AutoSize = true });
+                details.Controls.Add(new Label { Text = $"Phone: {seller.Phone}", Left = 20, Top = 70, AutoSize = true });
+                details.Controls.Add(new Label { Text = $"Address: {seller.CompanyAddress}", Left = 20, Top = 95, AutoSize = true, Width = _pnlMain.Width - 80 });
+                panel.Controls.Add(details);
+            }
+
+            LoadView(panel);
+        }
+
+        private void LoadView(Control view)
+        {
+            // Dispose previous view safely
+            if (_currentView != null)
+            {
+                _pnlMain.Controls.Remove(_currentView);
+                _currentView.Dispose();
+                _currentView = null;
+            }
+
+            _currentView = view;
+            _pnlMain.Controls.Clear();
+            _pnlMain.Controls.Add(view);
+        }
+    }
+}

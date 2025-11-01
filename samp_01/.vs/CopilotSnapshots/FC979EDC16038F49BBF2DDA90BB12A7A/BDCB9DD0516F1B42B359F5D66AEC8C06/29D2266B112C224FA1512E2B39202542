@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
+
+namespace samp_01.Data.Repositories
+{
+    /// <summary>
+    /// ADO.NET implementation of <see cref="IMessageRepository"/> for MySQL.
+    /// </summary>
+    /// <remarks>
+    /// Used by:
+    /// - Services/Orders/OrderService (posting system messages like delivery and requirements)
+    /// - Forms/User/UserOrdersForm (user chat UI)
+    /// - Forms/ServiceProvider/ProviderOrdersForm (seller chat UI)
+    /// </remarks>
+    public class AdoMessageRepository : IMessageRepository
+    {
+        private readonly string _cs;
+
+        /// <summary>
+        /// Construct repository with a connection string.
+        /// </summary>
+        public AdoMessageRepository(string cs) { _cs = cs; }
+
+        /// <summary>
+        /// Adds a message row to the messages table.
+        /// </summary>
+        /// <param name="m">Message entity (order id, sender, optional text and file path).</param>
+        /// <returns>Generated id or0 if insert failed.</returns>
+        public int Add(samp_01.Domain.Entities.Message m)
+        {
+            using var db = new AdoDbContext(_cs);
+            var sql = @"INSERT INTO messages (orderid, senderid, sendertype, message, filepath, sentat)
+                         VALUES (@oid,@sid,@stype,@msg,@file,@at)";
+            var rows = db.ExecuteNonQuery(sql,
+                new MySqlParameter("@oid", m.OrderId),
+                new MySqlParameter("@sid", m.SenderId),
+                new MySqlParameter("@stype", m.SenderType),
+                new MySqlParameter("@msg", (object?)m.Body ?? DBNull.Value),
+                new MySqlParameter("@file", (object?)m.FilePath ?? DBNull.Value),
+                new MySqlParameter("@at", m.SentAt));
+            if (rows > 0)
+            {
+                using var db2 = new AdoDbContext(_cs);
+                return Convert.ToInt32(db2.ExecuteScalar("SELECT LAST_INSERT_ID();"));
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Returns messages for an order sorted by time ascending.
+        /// </summary>
+        /// <param name="orderId">Order identifier.</param>
+        public List<samp_01.Domain.Entities.Message> GetByOrder(int orderId)
+        {
+            using var db = new AdoDbContext(_cs);
+            var sql = "SELECT id, orderid, senderid, sendertype, message, filepath, sentat FROM messages WHERE orderid=@oid ORDER BY sentat ASC";
+            return db.Query(sql, r => new samp_01.Domain.Entities.Message
+            {
+                Id = r.GetInt32(0),
+                OrderId = r.GetInt32(1),
+                SenderId = r.GetInt32(2),
+                SenderType = r.GetString(3),
+                Body = r.IsDBNull(4) ? null : r.GetString(4),
+                FilePath = r.IsDBNull(5) ? null : r.GetString(5),
+                SentAt = r.GetDateTime(6)
+            }, new MySqlParameter("@oid", orderId));
+        }
+    }
+}

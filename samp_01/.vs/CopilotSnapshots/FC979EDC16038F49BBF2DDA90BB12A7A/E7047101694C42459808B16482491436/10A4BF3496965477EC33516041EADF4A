@@ -1,0 +1,23 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace samp_01.Forms.User
+{
+ public class DashboardForm : Form
+ {
+ private Button btnLogout;
+ public DashboardForm(string userName)
+ {
+ Text = "Dashboard";
+ ClientSize = new Size(400,200);
+ StartPosition = FormStartPosition.CenterScreen;
+
+ var lbl = new Label { Text = $"Welcome, {userName}", Left =20, Top =20, AutoSize = true, Font = new Font(FontFamily.GenericSansSerif,12, FontStyle.Bold) };
+ btnLogout = new Button { Text = "Logout", Left =300, Top =140, Width =70 };
+ btnLogout.Click += (s, e) => Close();
+
+ Controls.AddRange(new Control[] { lbl, btnLogout });
+ }
+ }
+}

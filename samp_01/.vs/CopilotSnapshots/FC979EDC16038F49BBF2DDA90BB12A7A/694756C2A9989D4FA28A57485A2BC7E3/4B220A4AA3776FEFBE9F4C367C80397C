@@ -1,0 +1,32 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using samp_01.Data;
+
+#nullable disable
+
+namespace samp_01.Migrations
+{
+ [DbContext(typeof(AppDbContext))]
+ [Migration("20251030_AlterMessages_ForDirectChat")]
+ public partial class AlterMessages_ForDirectChat : Migration
+ {
+ protected override void Up(MigrationBuilder migrationBuilder)
+ {
+ // allow NULL orderid for direct messages
+ migrationBuilder.Sql("ALTER TABLE `messages` MODIFY `orderid` INT NULL;");
+ // add receiver columns (idempotent on MySQL8+)
+ migrationBuilder.Sql("ALTER TABLE `messages` ADD COLUMN IF NOT EXISTS `receiverid` INT NULL AFTER `senderid`;" );
+ migrationBuilder.Sql("ALTER TABLE `messages` ADD COLUMN IF NOT EXISTS `receivertype` ENUM('User','Seller') NULL AFTER `receiverid`;" );
+ // indexes are optional for functionality; skip to avoid duplicates across retries
+ }
+
+ protected override void Down(MigrationBuilder migrationBuilder)
+ {
+ // best-effort cleanup; these may fail if not present depending on server version
+ migrationBuilder.Sql("ALTER TABLE `messages` DROP COLUMN `receivertype`;" );
+ migrationBuilder.Sql("ALTER TABLE `messages` DROP COLUMN `receiverid`;" );
+ migrationBuilder.Sql("ALTER TABLE `messages` MODIFY `orderid` INT NOT NULL;" );
+ }
+ }
+}

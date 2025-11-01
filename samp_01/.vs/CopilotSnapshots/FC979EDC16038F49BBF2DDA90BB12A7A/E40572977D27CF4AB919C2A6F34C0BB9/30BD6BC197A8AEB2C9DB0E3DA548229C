@@ -1,0 +1,178 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+
+namespace samp_01.Forms.User
+{
+ public class DirectMessagesForm : Form
+ {
+ private readonly UserProfileDTO _me;
+ private readonly IMessageRepository _messages = new AdoMessageRepository(AppConfig.ConnectionString);
+ private readonly IServiceRepository _services = new AdoServiceRepository(AppConfig.ConnectionString);
+ private readonly ISellerRepository _sellers = new AdoSellerRepository(AppConfig.ConnectionString);
+ private Panel _host = null!;
+ private ListBox _peers = null!;
+ private Panel _thread = null!;
+ private int? _peerId;
+ private string _peerType = "Seller"; // default peer type
+
+ // search UI
+ private ComboBox _cmbService = null!;
+ private TextBox _txtName = null!;
+ private ListBox _searchResults = null!;
+
+ public DirectMessagesForm(UserProfileDTO me)
+ {
+ _me = me;
+ Text = "Messages";
+ BackColor = Color.FromArgb(248,249,250);
+ Font = new Font("Segoe UI",9);
+ Dock = DockStyle.Fill;
+ _host = new Panel { Dock = DockStyle.Fill, BackColor = BackColor, Padding = new Padding(10) };
+ Controls.Add(_host);
+ Build();
+ }
+
+ private void Build()
+ {
+ _host.Controls.Clear();
+ var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount =1, RowCount =2, BackColor = _host.BackColor };
+ root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+ root.RowStyles.Add(new RowStyle(SizeType.Percent,100));
+ _host.Controls.Add(root);
+
+ // Search panel
+ var search = new Panel { Dock = DockStyle.Top, Height =70, BackColor = Color.Transparent };
+ var lblService = new Label { Text = "Service:", Left =10, Top =12, AutoSize = true };
+ _cmbService = new ComboBox { Left =70, Top =8, Width =200, DropDownStyle = ComboBoxStyle.DropDownList };
+ _cmbService.Items.Clear();
+ _cmbService.Items.Add(new ComboItem { Id =0, Text = "All" });
+ foreach (var svc in _services.GetAll()) _cmbService.Items.Add(new ComboItem { Id = svc.Id, Text = svc.Name });
+ _cmbService.SelectedIndex =0;
+ var lblName = new Label { Text = "Seller:", Left =290, Top =12, AutoSize = true };
+ _txtName = new TextBox { Left =340, Top =8, Width =200 };
+ var btnSearch = new Button { Text = "Search", Left =550, Top =7, Width =80 };
+ btnSearch.Click += (s, e) => DoSearch();
+ search.Controls.AddRange(new Control[] { lblService, _cmbService, lblName, _txtName, btnSearch });
+
+ var mid = new SplitContainer { Dock = DockStyle.Fill, SplitterDistance =260 };
+
+ // Left panel: conversations (top) + search results (bottom)
+ var left = new SplitContainer { Dock = DockStyle.Fill, Orientation = Orientation.Horizontal, SplitterDistance =180 };
+ _peers = new ListBox { Dock = DockStyle.Fill };
+ left.Panel1.Controls.Add(_peers);
+ _searchResults = new ListBox { Dock = DockStyle.Fill };
+ left.Panel2.Controls.Add(_searchResults);
+ mid.Panel1.Controls.Add(left);
+
+ // Right panel: thread
+ _thread = new Panel { Dock = DockStyle.Fill, AutoScroll = true, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
+ mid.Panel2.Controls.Add(_thread);
+
+ root.Controls.Add(search,0,0);
+ root.Controls.Add(mid,0,1);
+
+ LoadPeers();
+ _peers.SelectedIndexChanged += (s, e) => { var item = _peers.SelectedItem as PeerItem; if (item != null) { _peerId = item.Id; _peerType = item.Type; LoadThread(); } };
+ _searchResults.DoubleClick += (s, e) => OpenChatFromSearch();
+ }
+
+ private void DoSearch()
+ {
+ _searchResults.Items.Clear();
+ var selected = _cmbService.SelectedItem as ComboItem;
+ var name = _txtName.Text?.Trim();
+ var results = new List<SellerSummaryDTO>();
+ if (selected != null && selected.Id >0)
+ {
+ results.AddRange(_sellers.GetSellersByService(selected.Id));
+ }
+ if (!string.IsNullOrWhiteSpace(name))
+ {
+ var byName = _sellers.SearchByCompanyName(name);
+ // merge without duplicates
+ foreach (var s in byName) if (!results.Any(r => r.Id == s.Id)) results.Add(s);
+ }
+ if ((selected == null || selected.Id ==0) && string.IsNullOrWhiteSpace(name))
+ {
+ // nothing selected -> show nothing
+ return;
+ }
+ foreach (var s in results.OrderBy(r => r.CompanyName))
+ {
+ _searchResults.Items.Add(new PeerItem { Id = s.Id, Type = "Seller", Text = s.CompanyName });
+ }
+ }
+
+ private void OpenChatFromSearch()
+ {
+ var item = _searchResults.SelectedItem as PeerItem;
+ if (item == null) return;
+ _peerId = item.Id; _peerType = item.Type; LoadThread();
+ }
+
+ private void LoadPeers()
+ {
+ _peers.Items.Clear();
+ foreach (var conv in _messages.GetDirectConversations(_me.Id, "User"))
+ {
+ _peers.Items.Add(new PeerItem { Id = conv.PeerId, Type = conv.PeerType, Text = $"{conv.PeerType} #{conv.PeerId} - {conv.LastAt:g} - {conv.Preview}" });
+ }
+ }
+
+ private void LoadThread()
+ {
+ if (!_peerId.HasValue) return;
+ _thread.Controls.Clear();
+ int y =10;
+ foreach (var m in _messages.GetDirect(_me.Id, "User", _peerId.Value, _peerType))
+ {
+ var bubble = new Panel { Left =10, Top = y, Width = _thread.Width -40, Height =70, Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
+ var who = new Label { Text = m.SenderType + "#" + m.SenderId, Left =10, Top =8, AutoSize = true, Font = new Font("Segoe UI",8, FontStyle.Bold) };
+ var body = new Label { Text = string.IsNullOrEmpty(m.Body) ? "" : m.Body, Left =10, Top =26, Width = bubble.Width -20, Height =20 };
+ bubble.Controls.Add(who); bubble.Controls.Add(body);
+ _thread.Controls.Add(bubble);
+ y +=80;
+ }
+ // composer
+ var txt = new TextBox { Left =10, Top = _thread.Height -70, Width = _thread.Width -190, Height =60, Multiline = true, Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
+ var send = new Button { Text = "Send", Left = txt.Right +10, Top = _thread.Height -70, Width =70, Height =60, Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
+ send.Click += (s, e) => { _messages.Add(new samp_01.Domain.Entities.Message { OrderId = null, SenderId = _me.Id, SenderType = "User", ReceiverId = _peerId, ReceiverType = _peerType, Body = string.IsNullOrWhiteSpace(txt.Text) ? null : txt.Text.Trim(), SentAt = DateTime.UtcNow }); txt.Clear(); LoadThread(); LoadPeers(); };
+ _thread.Controls.Add(txt);
+ _thread.Controls.Add(send);
+ // Delete chat button (user-only action)
+ var delete = new Button { Text = "Delete Chat", Left = send.Right +10, Top = _thread.Height -70, Width =90, Height =60, Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
+ delete.Click += (s, e) =>
+ {
+ if (_peerId.HasValue)
+ {
+ var confirm = MessageBox.Show("Delete this chat?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+ if (confirm == DialogResult.Yes)
+ {
+ if (_peerType.Equals("Seller", StringComparison.OrdinalIgnoreCase))
+ {
+ if (_messages.DeleteDirectThread(_me.Id, _peerId.Value)) { LoadPeers(); _thread.Controls.Clear(); }
+ else MessageBox.Show("Nothing to delete or failed.");
+ }
+ else
+ {
+ MessageBox.Show("Delete is only supported for chats with sellers.");
+ }
+ }
+ }
+ };
+ _thread.Controls.Add(delete);
+ }
+
+ private class PeerItem
+ {
+ public int Id; public string Type = null!; public string Text = null!;
+ public override string ToString() => Text;
+ }
+ private class ComboItem { public int Id; public string Text = null!; public override string ToString() => Text; }
+ }
+}

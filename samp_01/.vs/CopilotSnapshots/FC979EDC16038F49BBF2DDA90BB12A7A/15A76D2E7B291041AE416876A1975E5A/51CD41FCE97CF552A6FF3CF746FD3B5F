@@ -1,0 +1,50 @@
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using samp_01.Data.Repositories;
+using samp_01.Domain.DTO;
+using samp_01.Helpers;
+
+namespace samp_01.Services.User
+{
+    // Service for user login and authentication
+    public class LoginService
+     {
+         private readonly IUserRepository _userRepo;
+         private readonly ISellerRepository _sellerRepo;
+
+        //method injection constructor 
+         public LoginService() : this(new AdoUserRepository(AppConfig.ConnectionString), new AdoSellerRepository(AppConfig.ConnectionString)) { }
+
+        //constructor with repository injection for testing
+        public LoginService(IUserRepository userRepo, ISellerRepository sellerRepo)
+        {
+            _userRepo = userRepo; _sellerRepo = sellerRepo;
+        }
+
+        // Authenticate user and retrieve profile
+        public bool Authenticate(LoginDTO dto, [NotNullWhen(true)] out object? profile)
+         {
+             profile = null;
+             if (dto == null) return false;
+
+             if (string.Equals(dto.Role, "seller", StringComparison.OrdinalIgnoreCase))
+             {
+                 if (string.IsNullOrWhiteSpace(dto.Email)) return false;
+                 var cred = _sellerRepo.GetCredentialsByEmail(dto.Email);
+                 if (cred == null || cred.Value.Hash == null || cred.Value.Salt == null) return false;
+                 if (!PasswordHelper.VerifyPassword(dto.Password, cred.Value.Salt, cred.Value.Hash)) return false;
+                 profile = _sellerRepo.GetSellerProfileById(cred.Value.Id);
+                 return profile != null;
+             }
+             else // user
+             {
+                 if (string.IsNullOrWhiteSpace(dto.Name)) return false;
+                 var cred = _userRepo.GetCredentialsByName(dto.Name);
+                 if (cred == null || cred.Value.Hash == null || cred.Value.Salt == null) return false;
+                 if (!PasswordHelper.VerifyPassword(dto.Password, cred.Value.Salt, cred.Value.Hash)) return false;
+                 profile = _userRepo.GetProfileById(cred.Value.Id);
+                 return profile != null;
+             }
+         }
+     }
+}

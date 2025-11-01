@@ -1,0 +1,33 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace samp_01.Migrations
+{
+ public partial class InitialCreate_AddUsersTable : Migration
+ {
+        // Up method to apply the migration
+        // creates the Users table if it does not already exist
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+         migrationBuilder.Sql(@"CREATE TABLE IF NOT EXISTS `users` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+           `name` VARCHAR(100) NOT NULL,
+            `passwordhash` VARCHAR(256) NOT NULL,
+            `salt` VARCHAR(128) NOT NULL,
+            `createdat` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+             PRIMARY KEY (`id`),
+             UNIQUE KEY `IX_Users_Name` (`name`)
+         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        }
+
+        // Down method to revert the migration
+        //if rolled back, drops the Users table
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+             migrationBuilder.Sql("DROP TABLE IF EXISTS `users`;");
+        }
+ }
+}

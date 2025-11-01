@@ -1,0 +1,137 @@
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Services.ServiceProvider;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+
+namespace samp_01.Forms.ServiceProvider
+{
+ public class ProviderRegistrationForm : Form
+ {
+ private TextBox txtName, txtEmail, txtPass, txtPass2, txtPhone, txtCompany, txtAddress;
+ private ComboBox cboService;
+ private PictureBox picLogo;
+ private Button btnPickLogo, btnRegister, btnCancel;
+ private Label lblMessage;
+ private readonly ServProRegistrationService _reg;
+ private readonly IServiceRepository _svcRepo;
+
+ public ProviderRegistrationForm()
+ {
+ _reg = new ServProRegistrationService();
+ _svcRepo = new AdoServiceRepository(AppConfig.ConnectionString);
+
+ Text = "Register as Service Provider";
+ ClientSize = new Size(560,480);
+ StartPosition = FormStartPosition.CenterParent;
+ Font = new Font("Segoe UI",9);
+
+ int y =12;
+ void AddLabelAnd(Control c, string label)
+ {
+ var l = new Label { Text = label, Left =12, Top = y +4, Width =120 };
+ c.Left =140; c.Top = y; c.Width =360;
+ Controls.Add(l); Controls.Add(c);
+ y +=40;
+ }
+
+ txtName = new TextBox(); AddLabelAnd(txtName, "Seller Name");
+ txtEmail = new TextBox(); AddLabelAnd(txtEmail, "Email");
+ txtPass = new TextBox { UseSystemPasswordChar = true }; AddLabelAnd(txtPass, "Password");
+ txtPass2 = new TextBox { UseSystemPasswordChar = true }; AddLabelAnd(txtPass2, "Confirm Password");
+ txtPhone = new TextBox(); AddLabelAnd(txtPhone, "Phone");
+ cboService = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
+ AddLabelAnd(cboService, "Service Type");
+ txtCompany = new TextBox(); AddLabelAnd(txtCompany, "Company Name");
+ txtAddress = new TextBox(); AddLabelAnd(txtAddress, "Company Address");
+
+ picLogo = new PictureBox { Left =140, Top = y, Width =120, Height =80, BorderStyle = BorderStyle.FixedSingle, SizeMode = PictureBoxSizeMode.Zoom };
+ btnPickLogo = new Button { Text = "Pick Logo", Left =280, Top = y +20, Width =100 };
+ btnPickLogo.Click += BtnPickLogo_Click;
+ Controls.Add(picLogo); Controls.Add(btnPickLogo);
+ y +=100;
+
+ lblMessage = new Label { Left =12, Top = y +4, Width =480, ForeColor = Color.FromArgb(180,0,0) }; Controls.Add(lblMessage);
+
+ btnRegister = new Button { Text = "Register", Left =140, Top = y +40, Width =120, BackColor = Color.FromArgb(10,132,255), ForeColor = Color.White };
+ btnRegister.Click += BtnRegister_Click; Controls.Add(btnRegister);
+ btnCancel = new Button { Text = "Cancel", Left =280, Top = y +40, Width =120 };
+ btnCancel.Click += (s,e) => { DialogResult = DialogResult.Cancel; Close(); };
+ Controls.Add(btnCancel);
+
+ Load += (s,e) => LoadServices();
+ }
+
+ private void LoadServices()
+ {
+ try
+ {
+ var services = _svcRepo.GetAll();
+ cboService.Items.Clear();
+ foreach (var s in services)
+ {
+ cboService.Items.Add(new ComboItem(s.Id, s.Name));
+ }
+ if (cboService.Items.Count >0) cboService.SelectedIndex =0;
+ }
+ catch (Exception ex)
+ {
+ lblMessage.Text = "Failed to load services: " + ex.Message;
+ }
+ }
+
+ private void BtnPickLogo_Click(object? sender, EventArgs e)
+ {
+ using var dlg = new OpenFileDialog { Filter = "Images|*.jpg;*.jpeg;*.png" };
+ if (dlg.ShowDialog(this) == DialogResult.OK)
+ {
+ picLogo.Image = Image.FromFile(dlg.FileName);
+ picLogo.Tag = dlg.FileName;
+ }
+ }
+
+ private void BtnRegister_Click(object? sender, EventArgs e)
+ {
+ lblMessage.Text = "";
+ if (txtPass.Text != txtPass2.Text) { lblMessage.Text = "Passwords do not match."; return; }
+ if (cboService.SelectedItem is not ComboItem svc) { lblMessage.Text = "Select a service."; return; }
+ var dto = new SellerRegisterDTO {
+ Name = txtName.Text.Trim(),
+ Email = txtEmail.Text.Trim(),
+ Password = txtPass.Text,
+ Phone = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim(),
+ ServiceId = svc.Id,
+ CompanyName = txtCompany.Text.Trim(),
+ CompanyAddress = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text.Trim(),
+ LogoPath = null
+ };
+
+ if (picLogo.Tag is string src && File.Exists(src))
+ {
+ var destDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data","logos");
+ Directory.CreateDirectory(destDir);
+ var dest = Path.Combine(destDir, Path.GetFileName(src));
+ File.Copy(src, dest, true);
+ dto.LogoPath = dest;
+ }
+
+ if (_reg.Register(dto, out var error))
+ {
+ MessageBox.Show("Service provider registered.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+ DialogResult = DialogResult.OK; Close();
+ }
+ else
+ {
+ lblMessage.Text = error ?? "Failed";
+ }
+ }
+
+ private record ComboItem(int Id, string Name)
+ {
+ public override string ToString() => Name;
+ }
+ }
+}

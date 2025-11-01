@@ -1,0 +1,81 @@
+﻿using System;
+using samp_01.Data.Repositories;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Services.Orders
+{
+ /// <summary>
+ /// Orchestrates the order lifecycle (request, conversation, progress, delivery, payment, completion).
+ /// </summary>
+ /// <remarks>
+ /// Used by:
+ /// - Forms/User/UserServicesForm: CreateRequest when buyer clicks Request Service.
+ /// - Forms/ServiceProvider/ProviderOrdersForm: ApprovePrice (Set Price) and MarkDelivered (Deliver).
+ /// - Forms/User/UserOrdersForm: CompleteAndPay (Pay & Complete).
+ /// Persists via ADO repositories (orders/messages/payments).
+ /// </remarks>
+ public class OrderService
+ {
+ private readonly IOrderRepository _orders;
+ private readonly IMessageRepository _messages;
+ private readonly IPaymentRepository _payments;
+
+ /// <summary>
+ /// Default constructor wiring ADO repositories with AppConfig connection string.
+ /// </summary>
+ public OrderService() : this(new AdoOrderRepository(AppConfig.ConnectionString), new AdoMessageRepository(AppConfig.ConnectionString), new AdoPaymentRepository(AppConfig.ConnectionString)) { }
+
+ /// <summary>
+ /// DI constructor for unit testing and composition.
+ /// </summary>
+ public OrderService(IOrderRepository orders, IMessageRepository messages, IPaymentRepository payments)
+ { _orders = orders; _messages = messages; _payments = payments; }
+
+ /// <summary>
+ /// Creates a new order for a buyer and seeds the conversation with optional requirements.
+ /// Sets status to In_Conversation when requirements are provided.
+ /// </summary>
+ public int CreateRequest(int userId, int sellerId, int serviceId, string title, string? requirements)
+ {
+ var order = new Order { UserId = userId, SellerId = sellerId, ServiceId = serviceId, Title = title, Requirements = requirements, TotalPrice =0m, Status = "Pending", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+ var id = _orders.Create(order);
+ if (id >0 && !string.IsNullOrWhiteSpace(requirements))
+ {
+ _messages.Add(new samp_01.Domain.Entities.Message { OrderId = id, SenderId = userId, SenderType = "User", Body = requirements, SentAt = DateTime.UtcNow });
+ _orders.UpdateStatus(id, "In_Conversation");
+ }
+ return id;
+ }
+
+ /// <summary>
+ /// Buyer approves seller's price quote; moves order to In_Progress and sets total price.
+ /// </summary>
+ public bool ApprovePrice(int orderId, decimal price)
+ {
+ return _orders.UpdateStatus(orderId, "In_Progress", price);
+ }
+
+ /// <summary>
+ /// Seller posts final delivery (optional file + note) and moves order to Delivered.
+ /// </summary>
+ public void MarkDelivered(int orderId, int sellerId, string? filePath, string? note)
+ {
+ _messages.Add(new samp_01.Domain.Entities.Message { OrderId = orderId, SenderId = sellerId, SenderType = "Seller", FilePath = filePath, Body = note, SentAt = DateTime.UtcNow });
+ _orders.UpdateStatus(orderId, "Delivered");
+ }
+
+ /// <summary>
+ /// Buyer pays and closes the order; marks payment Paid and order Completed.
+ /// </summary>
+ public bool CompleteAndPay(int orderId, decimal amount)
+ {
+ var paid = _payments.UpdateStatus(orderId, "Paid", amount);
+ if (paid)
+ {
+ _orders.UpdateStatus(orderId, "Completed");
+ return true;
+ }
+ return false;
+ }
+ }
+}

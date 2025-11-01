@@ -1,0 +1,143 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using MySql.Data.MySqlClient;
+using samp_01.Data;
+using samp_01.Domain.DTO;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+    public class AdoSellerRepository : ISellerRepository
+    {
+        private readonly string _connectionString;
+        public AdoSellerRepository(string connectionString) => _connectionString = connectionString;
+
+        public bool ExistsByEmail(string email)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var obj = db.ExecuteScalar("SELECT COUNT(1) FROM sellers WHERE email = @email", new MySqlParameter("@email", email));
+            return Convert.ToInt32(obj ?? 0) > 0;
+        }
+
+        public int AddSeller(Seller seller)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = @"INSERT INTO sellers (name, email, passwordhash, salt, phone, serviceid, companyname, companyaddress, logopath, createdat)
+ VALUES (@name,@email,@hash,@salt,@phone,@serviceid,@company,@address,@logo,@now)";
+            var rows = db.ExecuteNonQuery(sql,
+            new MySqlParameter("@name", seller.Name),
+            new MySqlParameter("@email", seller.Email),
+            new MySqlParameter("@hash", seller.PasswordHash),
+            new MySqlParameter("@salt", seller.Salt),
+            new MySqlParameter("@phone", seller.Phone ?? (object)DBNull.Value),
+            new MySqlParameter("@serviceid", seller.ServiceId),
+            new MySqlParameter("@company", seller.CompanyName),
+            new MySqlParameter("@address", seller.CompanyAddress ?? (object)DBNull.Value),
+            new MySqlParameter("@logo", seller.LogoPath ?? (object)DBNull.Value),
+            new MySqlParameter("@now", DateTime.UtcNow)
+            );
+
+            if (rows > 0)
+            {
+                using var db2 = new AdoDbContext(_connectionString);
+                var idObj = db2.ExecuteScalar("SELECT LAST_INSERT_ID();");
+                return Convert.ToInt32(idObj);
+            }
+            return 0;
+        }
+
+        public (int Id, string? Hash, string? Salt)? GetCredentialsByEmail(string email)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = "SELECT id, passwordhash, salt FROM sellers WHERE email = @email LIMIT 1";
+            var list = db.Query(sql, r => (
+            Id: r.GetInt32(0),
+            Hash: r.IsDBNull(1) ? null : r.GetString(1),
+            Salt: r.IsDBNull(2) ? null : r.GetString(2)
+            ), new MySqlParameter("@email", email));
+            return list.FirstOrDefault();
+        }
+
+        public Seller? GetSellerEntityById(int id)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = "SELECT id, name, email, phone, serviceid, companyname, companyaddress, logopath, createdat FROM sellers WHERE id = @id LIMIT 1";
+            var list = db.Query(sql, r => new Seller
+            {
+                Id = r.GetInt32(0),
+                Name = r.GetString(1),
+                Email = r.GetString(2),
+                Phone = r.IsDBNull(3) ? null : r.GetString(3),
+                ServiceId = r.GetInt32(4),
+                CompanyName = r.GetString(5),
+                CompanyAddress = r.IsDBNull(6) ? null : r.GetString(6),
+                LogoPath = r.IsDBNull(7) ? null : r.GetString(7),
+                CreatedAt = r.IsDBNull(8) ? DateTime.MinValue : r.GetDateTime(8)
+            }, new MySqlParameter("@id", id));
+            return list.FirstOrDefault();
+        }
+
+        public SellerProfileDTO? GetSellerProfileById(int id)
+        {
+            var ent = GetSellerEntityById(id);
+            if (ent == null) return null;
+            return new SellerProfileDTO
+            {
+                Id = ent.Id,
+                Name = ent.Name,
+                Email = ent.Email,
+                Phone = ent.Phone,
+                ServiceId = ent.ServiceId,
+                CompanyName = ent.CompanyName,
+                CompanyAddress = ent.CompanyAddress,
+                LogoPath = ent.LogoPath,
+                CreatedAt = ent.CreatedAt
+            };
+        }
+
+        public List<SellerSummaryDTO> GetSellersByService(int serviceId)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = @"SELECT s.id, s.companyname,
+ s.logopath AS sellerlogo,
+ p.profilepicpath AS portfoliopic,
+ p.description AS shortdesc
+ FROM sellers s
+ LEFT JOIN seller_portfolios p ON p.sellerid = s.id
+ WHERE s.serviceid = @sid";
+            return db.Query(sql, r => new SellerSummaryDTO
+            {
+                Id = r.GetInt32(0),
+                CompanyName = r.GetString(1),
+                LogoPath = r.IsDBNull(2) ? null : r.GetString(2),
+                PortfolioPicPath = r.IsDBNull(3) ? null : r.GetString(3),
+                ShortDescription = r.IsDBNull(4) ? null : r.GetString(4),
+                Rating = 0
+            }, new MySqlParameter("@sid", serviceId));
+        }
+
+        public List<SellerSummaryDTO> SearchByCompanyName(string nameLike)
+        {
+            using var db = new AdoDbContext(_connectionString);
+            var sql = @"SELECT s.id, s.companyname,
+ s.logopath AS sellerlogo,
+ p.profilepicpath AS portfoliopic,
+ p.description AS shortdesc
+ FROM sellers s
+ LEFT JOIN seller_portfolios p ON p.sellerid = s.id
+ WHERE s.companyname LIKE CONCAT('%', @q, '%')
+ ORDER BY s.companyname";
+            return db.Query(sql, r => new SellerSummaryDTO
+            {
+                Id = r.GetInt32(0),
+                CompanyName = r.GetString(1),
+                LogoPath = r.IsDBNull(2) ? null : r.GetString(2),
+                PortfolioPicPath = r.IsDBNull(3) ? null : r.GetString(3),
+                ShortDescription = r.IsDBNull(4) ? null : r.GetString(4),
+                Rating =0
+            }, new MySqlParameter("@q", nameLike));
+        }
+    }
+}

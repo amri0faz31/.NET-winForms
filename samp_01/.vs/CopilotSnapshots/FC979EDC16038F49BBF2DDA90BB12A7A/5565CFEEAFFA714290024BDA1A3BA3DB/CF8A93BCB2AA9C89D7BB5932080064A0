@@ -1,0 +1,64 @@
+﻿using Microsoft.EntityFrameworkCore;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data
+{
+    // EF DbContext retained for design-time tooling only; runtime uses ADO.NET (AdoDbContext).
+    public class AppDbContext : DbContext
+    {
+
+
+     //CLASS VARIABLE
+        private readonly string? _connectionString;
+
+
+     //CLASS PROPERTIES AND METHODS
+
+
+        //dataset representing the Users table in the database
+        public DbSet<User> Users { get; set; } = null!;
+
+        //dataset representing the Services table in the database
+        public DbSet<Service> Services { get; set; } = null!;
+
+        //dataset representing the Sellers table in the database
+        public DbSet<Seller> Sellers { get; set; } = null!;
+
+
+        //constructor accepting a connection string for database connectivity
+        //any class that uses AppDbContext must provide the connection string as argument
+        public AppDbContext(string connectionString) => _connectionString = connectionString;
+
+
+        // Constructor used by EF tooling and DI
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
+
+        //configure the database connection using the provided connection string
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    // Fall back to AppConfig for design-time scenarios if needed
+                    optionsBuilder.UseMySql(AppConfig.ConnectionString, ServerVersion.AutoDetect(AppConfig.ConnectionString));
+                }
+                else
+                {
+                    optionsBuilder.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString));
+                }
+            }
+        }
+
+        //create unique index on User.Name to prevent duplicate usernames
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();
+            modelBuilder.Entity<Service>().HasIndex(s => s.Name).IsUnique();
+            modelBuilder.Entity<Seller>().HasIndex(s => s.Email).IsUnique();
+            base.OnModelCreating(modelBuilder);
+        }
+    }
+}

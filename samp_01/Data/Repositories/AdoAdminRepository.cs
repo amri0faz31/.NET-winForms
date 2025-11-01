@@ -1,0 +1,72 @@
+using System;
+using System.Linq;
+using MySql.Data.MySqlClient;
+using samp_01.Data; // AdoDbContext
+using samp_01.Domain.DTO;
+
+namespace samp_01.Data.Repositories
+{
+/// <summary>
+/// ADO.NET implementation of <see cref="IAdminRepository"/> for MySQL.
+/// </summary>
+/// <remarks>
+/// Used by:
+/// - Services/Admin/AdminLoginService (authentication)
+/// - Forms/Admin/AdminDashboardForm (profile fetch)
+/// </remarks>
+public class AdoAdminRepository : IAdminRepository
+{
+private readonly string _connectionString;
+
+/// <summary>
+/// Create a repository with the given connection string.
+/// </summary>
+public AdoAdminRepository(string connectionString) => _connectionString = connectionString;
+
+/// <summary>
+/// Gets credentials (hash and salt) for the admin identified by name.
+/// </summary>
+/// <param name="name">Admin name (unique).</param>
+/// <returns>(Id, Hash, Salt) tuple or null if not found.</returns>
+/// <remarks>
+/// Referenced by: <c>Services/Admin/AdminLoginService.Authenticate</c>.
+/// </remarks>
+public (int Id, string? Hash, string? Salt)? GetCredentialsByName(string name)
+{
+using var db = new AdoDbContext(_connectionString);
+const string sql = "SELECT id, passwordhash, salt FROM admins WHERE name = @name LIMIT 1";
+
+// Map to tuple for lightweight credential read
+var list = db.Query(sql, r => (
+Id: r.GetInt32(0),
+Hash: r.IsDBNull(1) ? null : r.GetString(1),
+Salt: r.IsDBNull(2) ? null : r.GetString(2)
+), new MySqlParameter("@name", name));
+
+return list.FirstOrDefault();
+}
+
+/// <summary>
+/// Gets an admin profile by its identifier.
+/// </summary>
+/// <param name="id">Admin identifier.</param>
+/// <returns><see cref="AdminProfileDTO"/> or null.</returns>
+/// <remarks>
+/// Referenced by: <c>Forms/Admin/AdminDashboardForm</c> to show profile header.
+/// </remarks>
+public AdminProfileDTO? GetProfileById(int id)
+{
+using var db = new AdoDbContext(_connectionString);
+const string sql = "SELECT id, name, createdat FROM admins WHERE id = @id LIMIT 1";
+
+var list = db.Query(sql, r => new AdminProfileDTO
+{
+Id = r.GetInt32(0),
+Name = r.GetString(1),
+CreatedAt = r.IsDBNull(2) ? DateTime.MinValue : r.GetDateTime(2)
+}, new MySqlParameter("@id", id));
+
+return list.FirstOrDefault();
+}
+}
+}

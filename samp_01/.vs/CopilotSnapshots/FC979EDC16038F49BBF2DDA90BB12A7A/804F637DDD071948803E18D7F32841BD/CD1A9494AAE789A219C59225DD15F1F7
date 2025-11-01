@@ -1,0 +1,14 @@
+﻿using System.Collections.Generic;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+ public interface IOrderRepository
+ {
+ int Create(Order order);
+ Order? GetById(int id);
+ List<Order> GetByUser(int userId);
+ List<Order> GetBySeller(int sellerId);
+ bool UpdateStatus(int orderId, string status, decimal? totalPrice = null);
+ }
+}

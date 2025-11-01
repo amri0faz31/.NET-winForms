@@ -1,0 +1,62 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using samp_01.Data;
+
+#nullable disable
+
+namespace samp_01.Migrations
+{
+ [DbContext(typeof(AppDbContext))]
+ [Migration("20251030_AlterMessages_ForDirectChat")]
+ public partial class AlterMessages_ForDirectChat : Migration
+ {
+ protected override void Up(MigrationBuilder migrationBuilder)
+ {
+ // allow NULL orderid for direct messages
+ migrationBuilder.Sql("ALTER TABLE `messages` MODIFY `orderid` INT NULL;");
+
+ // add receiverid if missing (idempotent)
+ migrationBuilder.Sql(@"
+SET @c := (SELECT COUNT(*) FROM information_schema.columns 
+WHERE table_schema = DATABASE() AND table_name = 'messages' AND column_name = 'receiverid');
+SET @sql := IF(@c =0, 'ALTER TABLE `messages` ADD COLUMN `receiverid` INT NULL AFTER `senderid`', 'SELECT1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+");
+
+ // add receivertype if missing (idempotent)
+ migrationBuilder.Sql(@"
+SET @c := (SELECT COUNT(*) FROM information_schema.columns 
+WHERE table_schema = DATABASE() AND table_name = 'messages' AND column_name = 'receivertype');
+SET @sql := IF(@c =0, 'ALTER TABLE `messages` ADD COLUMN `receivertype` ENUM(''User'',''Seller'') NULL AFTER `receiverid`', 'SELECT1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+");
+
+ // create index on orderid if missing (idempotent)
+ migrationBuilder.Sql(@"
+SET @c := (SELECT COUNT(1) FROM information_schema.statistics 
+WHERE table_schema = DATABASE() AND table_name = 'messages' AND index_name = 'IX_Messages_Order');
+SET @sql := IF(@c =0, 'CREATE INDEX `IX_Messages_Order` ON `messages` (`orderid`)', 'SELECT1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+");
+
+ // create composite index for direct chats if missing (idempotent)
+ migrationBuilder.Sql(@"
+SET @c := (SELECT COUNT(1) FROM information_schema.statistics 
+WHERE table_schema = DATABASE() AND table_name = 'messages' AND index_name = 'IX_Messages_Direct');
+SET @sql := IF(@c =0, 'CREATE INDEX `IX_Messages_Direct` ON `messages` (`sendertype`, `senderid`, `receivertype`, `receiverid`)', 'SELECT1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+");
+ }
+
+ protected override void Down(MigrationBuilder migrationBuilder)
+ {
+ // best-effort cleanup
+ migrationBuilder.Sql("DROP INDEX `IX_Messages_Direct` ON `messages`;" );
+ migrationBuilder.Sql("DROP INDEX `IX_Messages_Order` ON `messages`;" );
+ migrationBuilder.Sql("ALTER TABLE `messages` DROP COLUMN `receivertype`;" );
+ migrationBuilder.Sql("ALTER TABLE `messages` DROP COLUMN `receiverid`;" );
+ migrationBuilder.Sql("ALTER TABLE `messages` MODIFY `orderid` INT NOT NULL;" );
+ }
+ }
+}

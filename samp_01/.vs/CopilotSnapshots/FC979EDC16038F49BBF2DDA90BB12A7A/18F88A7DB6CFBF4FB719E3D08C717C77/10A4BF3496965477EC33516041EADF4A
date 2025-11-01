@@ -1,0 +1,45 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class DashboardForm : Form
+    {
+        private Button btnLogout;
+        private Button btnProfile;
+        private readonly UserProfileDTO _profile;
+
+        public DashboardForm(UserProfileDTO profile)
+        {
+            _profile = profile;
+
+            Text = "Dashboard";
+            ClientSize = new Size(800, 480);
+            StartPosition = FormStartPosition.CenterScreen;
+
+            // Sidebar
+            var pnlSidebar = new Panel { Left = 0, Top = 0, Width = 160, Height = ClientSize.Height, BackColor = Color.FromArgb(240, 240, 240) };
+            btnProfile = new Button { Text = "Profile", Left = 12, Top = 20, Width = 136 };
+            btnProfile.Click += (s, e) => ShowProfile();
+            btnLogout = new Button { Text = "Logout", Left = 12, Top = 60, Width = 136 };
+            btnLogout.Click += (s, e) => Close();
+            pnlSidebar.Controls.AddRange(new Control[] { btnProfile, btnLogout });
+
+            // Main area
+            var pnlMain = new Panel { Left = 160, Top = 0, Width = ClientSize.Width - 160, Height = ClientSize.Height, BackColor = Color.White };
+            var lbl = new Label { Text = $"Welcome, {_profile.Name}", Left = 20, Top = 20, AutoSize = true, Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold) };
+            var lblEmail = new Label { Text = $"Email: {_profile.Email}", Left = 20, Top = 60, AutoSize = true };
+            pnlMain.Controls.AddRange(new Control[] { lbl, lblEmail });
+
+            Controls.AddRange(new Control[] { pnlSidebar, pnlMain });
+        }
+
+        private void ShowProfile()
+        {
+            using var prof = new UserProfileForm(_profile.Name);
+            prof.ShowDialog(this);
+        }
+    }
+}

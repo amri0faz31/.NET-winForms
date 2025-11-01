@@ -1,0 +1,79 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Data.Repositories;
+
+namespace samp_01.Forms.Admin
+{
+ public class AdminDashboardForm : Form
+ {
+ private Panel _sidebar;
+ private Panel _main;
+ private Button _btnHome, _btnUsers, _btnSellers, _btnLogout;
+
+ public AdminDashboardForm(AdminProfileDTO profile)
+ {
+ Text = "Admin Dashboard";
+ ClientSize = new Size(1000,600);
+ StartPosition = FormStartPosition.CenterScreen;
+
+ _sidebar = new Panel { Left =0, Top =0, Width =220, Height = ClientSize.Height, BackColor = Color.FromArgb(30,30,30) };
+ _main = new Panel { Left =220, Top =0, Width = ClientSize.Width -220, Height = ClientSize.Height, BackColor = Color.White };
+
+ _btnHome = new Button { Text = "Home", Left =20, Top =20, Width =180, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.Transparent };
+ _btnHome.Click += (s,e) => ShowHome(profile);
+ _btnUsers = new Button { Text = "Users", Left =20, Top =60, Width =180, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.Transparent };
+ _btnUsers.Click += (s,e) => ShowUsers();
+ _btnSellers = new Button { Text = "Sellers", Left =20, Top =100, Width =180, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.Transparent };
+ _btnSellers.Click += (s,e) => ShowSellers();
+ _btnLogout = new Button { Text = "Logout", Left =20, Top =140, Width =180, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.Transparent };
+ _btnLogout.Click += (s,e) => Close();
+
+ _sidebar.Controls.AddRange(new Control[] { _btnHome, _btnUsers, _btnSellers, _btnLogout });
+ Controls.AddRange(new Control[] { _sidebar, _main });
+
+ ShowHome(profile);
+ }
+
+ private void LoadView(Control c)
+ {
+ _main.Controls.Clear();
+ _main.Controls.Add(c);
+ }
+
+ private void ShowHome(AdminProfileDTO profile)
+ {
+ var p = new Panel { Dock = DockStyle.Fill, BackColor = Color.White };
+ p.Controls.Add(new Label { Text = $"Welcome, {profile.Name}", Left =20, Top =20, AutoSize = true, Font = new Font("Segoe UI",14, FontStyle.Bold) });
+ LoadView(p);
+ }
+
+ private void ShowUsers()
+ {
+ var grid = new DataGridView { Dock = DockStyle.Fill, ReadOnly = true, AutoGenerateColumns = true };
+ // quick ADO fill
+ var repo = new AdoUserRepository(AppConfig.ConnectionString);
+ // hacky: use Query helper directly
+ using var db = new AdoDbContext(AppConfig.ConnectionString);
+ var list = db.Query("SELECT id, name, email, createdat FROM users ORDER BY createdat DESC", r => new
+ {
+ Id = r.GetInt32(0), Name = r.GetString(1), Email = r.IsDBNull(2) ? null : r.GetString(2), CreatedAt = r.GetDateTime(3)
+ });
+ grid.DataSource = list;
+ LoadView(grid);
+ }
+
+ private void ShowSellers()
+ {
+ var grid = new DataGridView { Dock = DockStyle.Fill, ReadOnly = true, AutoGenerateColumns = true };
+ using var db = new AdoDbContext(AppConfig.ConnectionString);
+ var list = db.Query("SELECT id, name, email, companyname, createdat FROM sellers ORDER BY createdat DESC", r => new
+ {
+ Id = r.GetInt32(0), Name = r.GetString(1), Email = r.GetString(2), Company = r.GetString(3), CreatedAt = r.GetDateTime(4)
+ });
+ grid.DataSource = list;
+ LoadView(grid);
+ }
+ }
+}

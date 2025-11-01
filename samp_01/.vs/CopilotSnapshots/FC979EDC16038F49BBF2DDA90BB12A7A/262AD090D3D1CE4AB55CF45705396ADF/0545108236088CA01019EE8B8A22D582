@@ -1,0 +1,62 @@
+﻿using Microsoft.EntityFrameworkCore;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data
+{
+    // DbContext for the application, managing User entities
+    public class AppDbContext : DbContext
+    {
+
+
+     //CLASS VARIABLE
+        private readonly string? _connectionString;
+
+
+     //CLASS PROPERTIES AND METHODS
+
+
+        //dataset representing the Users table in the database
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Seller> Sellers { get; set; } = null!;
+        public DbSet<Service> Services { get; set; } = null!;
+        public DbSet<Admin> Admins { get; set; } = null!;
+
+
+        //constructor accepting a connection string for database connectivity
+        //any class that uses AppDbContext must provide the connection string as argument
+        public AppDbContext(string connectionString) => _connectionString = connectionString;
+
+
+        // Constructor used by EF tooling and DI
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
+
+        //configure the database connection using the provided connection string
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    // Fall back to AppConfig for design-time scenarios if needed
+                    optionsBuilder.UseMySql(AppConfig.ConnectionString, ServerVersion.AutoDetect(AppConfig.ConnectionString));
+                }
+                else
+                {
+                    optionsBuilder.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString));
+                }
+            }
+        }
+
+        //create unique index on User.Name to prevent duplicate usernames
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();
+            modelBuilder.Entity<Seller>().HasIndex(s => s.Email).IsUnique();
+            modelBuilder.Entity<Service>().HasIndex(s => s.Name).IsUnique();
+            modelBuilder.Entity<Admin>().HasIndex(a => a.Name).IsUnique();
+            base.OnModelCreating(modelBuilder);
+        }
+    }
+}

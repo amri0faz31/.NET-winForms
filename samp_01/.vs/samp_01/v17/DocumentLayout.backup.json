@@ -1,0 +1,1068 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\amrif\\source\\repos\\samp_01\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\docs\\setup.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:docs\\setup.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\docs\\forms-callgraphs.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:docs\\forms-callgraphs.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\docs\\forms-dataflow.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:docs\\forms-dataflow.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\appconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:appconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\serviceproviderdashboardform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\serviceproviderdashboardform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\providerordersform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\providerordersform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\providerdirectmessagesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\providerdirectmessagesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\user\\directmessagesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\user\\directmessagesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\imessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\imessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adomessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adomessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adosellerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adosellerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adoorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adoorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\isellerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\isellerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\providerregistrationform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\providerregistrationform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\providerdirectmessagesform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\providerdirectmessagesform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\providerdirectmessagesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\providerdirectmessagesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\user\\loginform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\user\\loginform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\providerordersform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\providerordersform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\orderentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\orderentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\migrations\\20251029_addordersmessagingpayments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:migrations\\20251029_addordersmessagingpayments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\orders\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\orders\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\serviceprovider\\portfolioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\serviceprovider\\portfolioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adoportfoliorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adoportfoliorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\user\\loginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\user\\loginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\dto\\portfoliodtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\dto\\portfoliodtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251028_AddOrdersMessagingPayments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20251028_AddOrdersMessagingPayments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Domain\\Entities\\Order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\user\\userservicesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\user\\userservicesform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\serviceprovider\\servproprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\serviceprovider\\servproprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\serviceproviderportfolioform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\serviceproviderportfolioform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\iportfoliorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\iportfoliorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adoservicerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adoservicerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\admin\\adminloginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\admin\\adminloginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adoadminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adoadminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\ipaymentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\ipaymentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\user\\dashboardform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\user\\dashboardform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\adopaymentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\adopaymentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\serviceprovider\\servproregistrationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\serviceprovider\\servproregistrationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\user\\userprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\user\\userprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\services\\user\\registrationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:services\\user\\registrationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\serviceprovider\\serviceproviderprofileform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\serviceprovider\\serviceproviderprofileform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\sellerportfolio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\sellerportfolio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\seller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\seller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\admin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\admin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\dto\\userprofiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\dto\\userprofiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\sellerproject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\sellerproject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\dto\\sellerregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\dto\\sellerregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\dto\\registerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\dto\\registerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\entities\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\entities\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\dto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\dto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\user\\userordersform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\user\\userordersform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\migrations\\20251025_initialcreate_adduserstable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:migrations\\20251025_initialcreate_adduserstable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\iservicerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\iservicerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\user\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\user\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\forms\\admin\\admindashboardform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:forms\\admin\\admindashboardform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\helpers\\passwordhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:helpers\\passwordhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\domain\\dto\\admindtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:domain\\dto\\admindtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|c:\\users\\amrif\\source\\repos\\samp_01\\data\\repositories\\iadminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{680AFC48-0EF1-4B59-A253-3D5DD86BF85F}|samp_01.csproj|solutionrelative:data\\repositories\\iadminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Setup.md",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\docs\\Setup.md",
+              "RelativeDocumentMoniker": "docs\\Setup.md",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\docs\\Setup.md",
+              "RelativeToolTip": "docs\\Setup.md",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-01T16:40:23.615Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Forms-CallGraphs.md",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\docs\\Forms-CallGraphs.md",
+              "RelativeDocumentMoniker": "docs\\Forms-CallGraphs.md",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\docs\\Forms-CallGraphs.md",
+              "RelativeToolTip": "docs\\Forms-CallGraphs.md",
+              "ViewState": "AgIAAO0AAAAAAAAAAAAAAEgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-01T16:33:29.777Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Forms-DataFlow.md",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\docs\\Forms-DataFlow.md",
+              "RelativeDocumentMoniker": "docs\\Forms-DataFlow.md",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\docs\\Forms-DataFlow.md",
+              "RelativeToolTip": "docs\\Forms-DataFlow.md",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAMcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-01T16:30:25.142Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppConfig.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\AppConfig.cs",
+              "RelativeDocumentMoniker": "AppConfig.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\AppConfig.cs",
+              "RelativeToolTip": "AppConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T16:26:15.495Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DirectMessagesForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\DirectMessagesForm.cs",
+              "RelativeDocumentMoniker": "Forms\\User\\DirectMessagesForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\DirectMessagesForm.cs",
+              "RelativeToolTip": "Forms\\User\\DirectMessagesForm.cs",
+              "ViewState": "AgIAAL0AAAAAAAAAAIAwwHkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T14:17:38.756Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ProviderDirectMessagesForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs",
+              "ViewState": "AgIAAE8AAAAAAAAAAAApwF8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T19:37:58.391Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IMessageRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IMessageRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\IMessageRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IMessageRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\IMessageRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:19:05.232Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ProviderOrdersForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderOrdersForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ProviderOrdersForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderOrdersForm.cs",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ProviderOrdersForm.cs",
+              "ViewState": "AgIAAKoAAAAAAAAAAAAmwA4AAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T13:09:49.973Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ServiceProviderDashboardForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ServiceProviderDashboardForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ServiceProviderDashboardForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ServiceProviderDashboardForm.cs",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ServiceProviderDashboardForm.cs",
+              "ViewState": "AgIAAFMAAAAAAAAAAIAwwFsAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T21:11:06.024Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "AdoMessageRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoMessageRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoMessageRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoMessageRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoMessageRepository.cs",
+              "ViewState": "AgIAAIEAAAAAAAAAAAAMwJQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:19:47.348Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Message.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Message.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Message.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Message.cs",
+              "RelativeToolTip": "Domain\\Entities\\Message.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:17:28.564Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AdoSellerRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoSellerRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoSellerRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoSellerRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoSellerRepository.cs",
+              "ViewState": "AgIAAI8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T12:05:12.143Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AdoOrderRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoOrderRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoOrderRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoOrderRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoOrderRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:18:31.712Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ISellerRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\ISellerRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\ISellerRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\ISellerRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\ISellerRepository.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T13:33:14.891Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ProviderRegistrationForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderRegistrationForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ProviderRegistrationForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderRegistrationForm.cs",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ProviderRegistrationForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T07:06:28.286Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ProviderDirectMessagesForm.resx",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderDirectMessagesForm.resx",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ProviderDirectMessagesForm.resx",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderDirectMessagesForm.resx",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ProviderDirectMessagesForm.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2025-11-01T14:06:43.408Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ProviderDirectMessagesForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs [Design]",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ProviderDirectMessagesForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T14:06:39.552Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "LoginForm.resx",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\LoginForm.resx",
+              "RelativeDocumentMoniker": "Forms\\User\\LoginForm.resx",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\LoginForm.resx",
+              "RelativeToolTip": "Forms\\User\\LoginForm.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2025-11-01T13:53:32.408Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "IOrderRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IOrderRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\IOrderRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IOrderRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\IOrderRepository.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:18:09.756Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ProviderOrdersForm.resx",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderOrdersForm.resx",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ProviderOrdersForm.resx",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ProviderOrdersForm.resx",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ProviderOrdersForm.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2025-11-01T13:52:29.299Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "OrderEntity.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\OrderEntity.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\OrderEntity.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\OrderEntity.cs",
+              "RelativeToolTip": "Domain\\Entities\\OrderEntity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:55:15.614Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "20251029_AddOrdersMessagingPayments.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251029_AddOrdersMessagingPayments.cs",
+              "RelativeDocumentMoniker": "Migrations\\20251029_AddOrdersMessagingPayments.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251029_AddOrdersMessagingPayments.cs",
+              "RelativeToolTip": "Migrations\\20251029_AddOrdersMessagingPayments.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAQwD8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T15:28:04.376Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "OrderService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\Orders\\OrderService.cs",
+              "RelativeDocumentMoniker": "Services\\Orders\\OrderService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\Orders\\OrderService.cs",
+              "RelativeToolTip": "Services\\Orders\\OrderService.cs",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAYwAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:21:35.067Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "PortfolioService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\ServiceProvider\\PortfolioService.cs",
+              "RelativeDocumentMoniker": "Services\\ServiceProvider\\PortfolioService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\ServiceProvider\\PortfolioService.cs",
+              "RelativeToolTip": "Services\\ServiceProvider\\PortfolioService.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAIwBIAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T11:16:07.852Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "AdoPortfolioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoPortfolioRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoPortfolioRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoPortfolioRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoPortfolioRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T09:58:22.088Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "LoginService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\LoginService.cs",
+              "RelativeDocumentMoniker": "Services\\User\\LoginService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\LoginService.cs",
+              "RelativeToolTip": "Services\\User\\LoginService.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACQAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:35:32.916Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "ServProProfileService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\ServiceProvider\\ServProProfileService.cs",
+              "RelativeDocumentMoniker": "Services\\ServiceProvider\\ServProProfileService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\ServiceProvider\\ServProProfileService.cs",
+              "RelativeToolTip": "Services\\ServiceProvider\\ServProProfileService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T13:30:03.196Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "PortfolioDTOs.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\PortfolioDTOs.cs",
+              "RelativeDocumentMoniker": "Domain\\DTO\\PortfolioDTOs.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\PortfolioDTOs.cs",
+              "RelativeToolTip": "Domain\\DTO\\PortfolioDTOs.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T09:57:10.8Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "UserServicesForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\UserServicesForm.cs",
+              "RelativeDocumentMoniker": "Forms\\User\\UserServicesForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\UserServicesForm.cs",
+              "RelativeToolTip": "Forms\\User\\UserServicesForm.cs",
+              "ViewState": "AgIAAGQBAAAAAAAAAIBZwGkBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T13:14:31.829Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "ServiceProviderPortfolioForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ServiceProviderPortfolioForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ServiceProviderPortfolioForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ServiceProviderPortfolioForm.cs",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ServiceProviderPortfolioForm.cs",
+              "ViewState": "AgIAAGcAAAAAAAAAAAAmwHcAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T15:33:02.22Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "IPortfolioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IPortfolioRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\IPortfolioRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IPortfolioRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\IPortfolioRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T09:57:52.102Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "AdoServiceRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoServiceRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoServiceRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoServiceRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoServiceRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T20:08:16.77Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "AdminLoginService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\Admin\\AdminLoginService.cs",
+              "RelativeDocumentMoniker": "Services\\Admin\\AdminLoginService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\Admin\\AdminLoginService.cs",
+              "RelativeToolTip": "Services\\Admin\\AdminLoginService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:08:28.316Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "AdoAdminRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoAdminRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoAdminRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoAdminRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoAdminRepository.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAAAYAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:08:04.41Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "IPaymentRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IPaymentRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\IPaymentRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IPaymentRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\IPaymentRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:19:21.733Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "DashboardForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\DashboardForm.cs",
+              "RelativeDocumentMoniker": "Forms\\User\\DashboardForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\DashboardForm.cs",
+              "RelativeToolTip": "Forms\\User\\DashboardForm.cs",
+              "ViewState": "AgIAADsBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T07:43:33.617Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "AdoPaymentRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoPaymentRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\AdoPaymentRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\AdoPaymentRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\AdoPaymentRepository.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAEcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:20:08.845Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "Data\\AppDbContext.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:10:12.613Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "ServProRegistrationService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\ServiceProvider\\ServProRegistrationService.cs",
+              "RelativeDocumentMoniker": "Services\\ServiceProvider\\ServProRegistrationService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\ServiceProvider\\ServProRegistrationService.cs",
+              "RelativeToolTip": "Services\\ServiceProvider\\ServProRegistrationService.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAsAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T13:30:31.515Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "UserProfileService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\UserProfileService.cs",
+              "RelativeDocumentMoniker": "Services\\User\\UserProfileService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\UserProfileService.cs",
+              "RelativeToolTip": "Services\\User\\UserProfileService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T17:02:58.822Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\UserService.cs",
+              "RelativeDocumentMoniker": "Services\\User\\UserService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\UserService.cs",
+              "RelativeToolTip": "Services\\User\\UserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJoAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T17:03:02.187Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "RegistrationService.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\RegistrationService.cs",
+              "RelativeDocumentMoniker": "Services\\User\\RegistrationService.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Services\\User\\RegistrationService.cs",
+              "RelativeToolTip": "Services\\User\\RegistrationService.cs",
+              "ViewState": "AgIAADgAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T17:02:49.523Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "ServiceProviderProfileForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ServiceProviderProfileForm.cs",
+              "RelativeDocumentMoniker": "Forms\\ServiceProvider\\ServiceProviderProfileForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\ServiceProvider\\ServiceProviderProfileForm.cs",
+              "RelativeToolTip": "Forms\\ServiceProvider\\ServiceProviderProfileForm.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACwAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T11:07:49.776Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\User.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\User.cs",
+              "RelativeToolTip": "Domain\\Entities\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:23:43.322Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "Service.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Service.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Service.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Service.cs",
+              "RelativeToolTip": "Domain\\Entities\\Service.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:23:40.738Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "SellerPortfolio.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\SellerPortfolio.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\SellerPortfolio.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\SellerPortfolio.cs",
+              "RelativeToolTip": "Domain\\Entities\\SellerPortfolio.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T09:56:44.962Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "Seller.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Seller.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Seller.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Seller.cs",
+              "RelativeToolTip": "Domain\\Entities\\Seller.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:23:17.81Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "Admin.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Admin.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Admin.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Admin.cs",
+              "RelativeToolTip": "Domain\\Entities\\Admin.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:07:24.255Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 50,
+              "Title": "UserProfileDTO.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\UserProfileDTO.cs",
+              "RelativeDocumentMoniker": "Domain\\DTO\\UserProfileDTO.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\UserProfileDTO.cs",
+              "RelativeToolTip": "Domain\\DTO\\UserProfileDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:22:33.409Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 51,
+              "Title": "SellerProject.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\SellerProject.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\SellerProject.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\SellerProject.cs",
+              "RelativeToolTip": "Domain\\Entities\\SellerProject.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T09:56:59.784Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 52,
+              "Title": "SellerRegisterDTO.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\SellerRegisterDTO.cs",
+              "RelativeDocumentMoniker": "Domain\\DTO\\SellerRegisterDTO.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\SellerRegisterDTO.cs",
+              "RelativeToolTip": "Domain\\DTO\\SellerRegisterDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:22:31.896Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 53,
+              "Title": "RegisterDTO.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\RegisterDTO.cs",
+              "RelativeDocumentMoniker": "Domain\\DTO\\RegisterDTO.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\RegisterDTO.cs",
+              "RelativeToolTip": "Domain\\DTO\\RegisterDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:22:29.122Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 54,
+              "Title": "Payment.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Payment.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Payment.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Payment.cs",
+              "RelativeToolTip": "Domain\\Entities\\Payment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:17:49.522Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 55,
+              "Title": "LoginDTO.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\LoginDTO.cs",
+              "RelativeDocumentMoniker": "Domain\\DTO\\LoginDTO.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\LoginDTO.cs",
+              "RelativeToolTip": "Domain\\DTO\\LoginDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T16:22:26.776Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 56,
+              "Title": "UserOrdersForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\UserOrdersForm.cs",
+              "RelativeDocumentMoniker": "Forms\\User\\UserOrdersForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\UserOrdersForm.cs",
+              "RelativeToolTip": "Forms\\User\\UserOrdersForm.cs",
+              "ViewState": "AgIAAKYAAAAAAAAAAIBZwKsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:34:27.513Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "Order.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Order.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Order.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\Entities\\Order.cs",
+              "RelativeToolTip": "Domain\\Entities\\Order.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:14:34.228Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "20251028_AddOrdersMessagingPayments.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251028_AddOrdersMessagingPayments.cs",
+              "RelativeDocumentMoniker": "Migrations\\20251028_AddOrdersMessagingPayments.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251028_AddOrdersMessagingPayments.cs",
+              "RelativeToolTip": "Migrations\\20251028_AddOrdersMessagingPayments.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T14:14:18.3Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 57,
+              "Title": "20251025_InitialCreate_AddUsersTable.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251025_InitialCreate_AddUsersTable.cs",
+              "RelativeDocumentMoniker": "Migrations\\20251025_InitialCreate_AddUsersTable.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Migrations\\20251025_InitialCreate_AddUsersTable.cs",
+              "RelativeToolTip": "Migrations\\20251025_InitialCreate_AddUsersTable.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:39:46.769Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 58,
+              "Title": "IServiceRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IServiceRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\IServiceRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IServiceRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\IServiceRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T13:33:25.731Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 59,
+              "Title": "LoginForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\LoginForm.cs",
+              "RelativeDocumentMoniker": "Forms\\User\\LoginForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\User\\LoginForm.cs",
+              "RelativeToolTip": "Forms\\User\\LoginForm.cs",
+              "ViewState": "AgIAAOIAAAAAAAAAAAAqwP0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T07:52:46.098Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 60,
+              "Title": "AdminDashboardForm.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\Admin\\AdminDashboardForm.cs",
+              "RelativeDocumentMoniker": "Forms\\Admin\\AdminDashboardForm.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Forms\\Admin\\AdminDashboardForm.cs",
+              "RelativeToolTip": "Forms\\Admin\\AdminDashboardForm.cs",
+              "ViewState": "AgIAAAYBAAAAAAAAAAAqwCQBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:08:51.91Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 61,
+              "Title": "PasswordHelper.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Helpers\\PasswordHelper.cs",
+              "RelativeDocumentMoniker": "Helpers\\PasswordHelper.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Helpers\\PasswordHelper.cs",
+              "RelativeToolTip": "Helpers\\PasswordHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:18:46.077Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 62,
+              "Title": "AdminDTOs.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\AdminDTOs.cs",
+              "RelativeDocumentMoniker": "Domain\\DTO\\AdminDTOs.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Domain\\DTO\\AdminDTOs.cs",
+              "RelativeToolTip": "Domain\\DTO\\AdminDTOs.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:07:38.103Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 63,
+              "Title": "IAdminRepository.cs",
+              "DocumentMoniker": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IAdminRepository.cs",
+              "RelativeDocumentMoniker": "Data\\Repositories\\IAdminRepository.cs",
+              "ToolTip": "C:\\Users\\amrif\\source\\repos\\samp_01\\Data\\Repositories\\IAdminRepository.cs",
+              "RelativeToolTip": "Data\\Repositories\\IAdminRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T08:07:49.23Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

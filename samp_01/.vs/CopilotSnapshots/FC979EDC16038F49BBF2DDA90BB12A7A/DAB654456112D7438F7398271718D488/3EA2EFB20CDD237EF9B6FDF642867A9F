@@ -1,0 +1,39 @@
+﻿using Microsoft.EntityFrameworkCore;
+using samp_01.Data;
+using samp_01.Forms.User;
+
+namespace samp_01
+{
+    internal static class Program
+    {
+        /// <summary>
+        ///  The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            // To customize application configuration such as set high DPI settings or default font,
+            // see https://aka.ms/applicationconfiguration.
+            ApplicationConfiguration.Initialize();
+
+            var conn = AppConfig.ConnectionString;
+
+            // Apply EF migrations at startup if there are pending migrations.
+            // This makes the app create missing tables on a new database automatically.
+            // For production use, consider running migrations from CI/CD instead.
+            try
+            {
+                using var efCtx = new AppDbContext(conn);
+                efCtx.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to apply migrations: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Run the UI. Runtime data access uses ADO.NET (AdoDbContext / repositories).
+            Application.Run(new samp_01.Forms.User.LoginForm());
+        }
+    }
+}

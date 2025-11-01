@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+ /// <summary>
+ /// Repository abstraction for CRUD operations on <see cref="Order"/> entities.
+ /// </summary>
+ /// <remarks>
+ /// Implemented by <c>AdoOrderRepository</c>. Used by <c>OrderService</c>, user and provider order UIs.
+ /// </remarks>
+ public interface IOrderRepository
+ {
+ /// <summary>
+ /// Creates a new order and returns its identifier.
+ /// </summary>
+ int Create(Order order);
+
+ /// <summary>
+ /// Gets an order by id.
+ /// </summary>
+ Order? GetById(int id);
+
+ /// <summary>
+ /// Lists orders created by the given user (buyer).
+ /// </summary>
+ List<Order> GetByUser(int userId);
+
+ /// <summary>
+ /// Lists orders assigned to the given seller (provider).
+ /// </summary>
+ List<Order> GetBySeller(int sellerId);
+
+ /// <summary>
+ /// Updates status and optionally total price.
+ /// </summary>
+ bool UpdateStatus(int orderId, string status, decimal? totalPrice = null);
+ }
+}

@@ -1,0 +1,180 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class RegisterForm : Form
+    {
+        private TextBox txtName;
+        private TextBox txtPass1;
+        private TextBox txtPass2;
+        private TextBox txtEmail;
+        private TextBox txtAddress1;
+        private TextBox txtAddress2;
+        private TextBox txtCity;
+        private TextBox txtState;
+        private TextBox txtPostal;
+        private TextBox txtCountry;
+        private TextBox txtCardHolder;
+        private TextBox txtCardNumber;
+        private TextBox txtCardExpiry;
+        private Button btnCreate;
+        private Button btnCancel;
+        private Label lblMessage;
+        private readonly RegistrationService _registrationService;
+
+        public RegisterForm()
+        {
+            _registrationService = new RegistrationService();
+
+            Text = "Register";
+            ClientSize = new Size(520, 520);
+            StartPosition = FormStartPosition.CenterParent;
+            Font = new Font("Segoe UI", 9);
+
+            var lblTitle = new Label { Text = "Create account", Font = new Font("Segoe UI", 14, FontStyle.Bold), Left = 20, Top = 10, AutoSize = true };
+
+            var panel = new Panel { Left = 20, Top = 40, Width = 480, Height = 420, AutoScroll = true };
+
+            int y = 6;
+            // Helper to add label and control
+            void AddLabelAndControl(string labelText, Control control)
+            {
+                var lbl = new Label { Text = labelText, Left = 8, Top = y + 6, Width = 120 };
+                control.Left = 140;
+                control.Top = y;
+                control.Width = 300;
+                panel.Controls.Add(lbl);
+                panel.Controls.Add(control);
+                y += 36;
+            }
+
+            txtName = new TextBox();
+            AddLabelAndControl("Name", txtName);
+
+            txtEmail = new TextBox();
+            AddLabelAndControl("Email", txtEmail);
+
+            txtPass1 = new TextBox { UseSystemPasswordChar = true };
+            AddLabelAndControl("Password", txtPass1);
+
+            txtPass2 = new TextBox { UseSystemPasswordChar = true };
+            AddLabelAndControl("Confirm Password", txtPass2);
+
+            txtAddress1 = new TextBox();
+            AddLabelAndControl("Address Line1", txtAddress1);
+
+            txtAddress2 = new TextBox();
+            AddLabelAndControl("Address Line2", txtAddress2);
+
+            txtCity = new TextBox();
+            AddLabelAndControl("City", txtCity);
+
+            txtState = new TextBox();
+            AddLabelAndControl("State", txtState);
+
+            txtPostal = new TextBox();
+            AddLabelAndControl("Postal Code", txtPostal);
+
+            txtCountry = new TextBox();
+            AddLabelAndControl("Country", txtCountry);
+
+            txtCardHolder = new TextBox();
+            AddLabelAndControl("Card Holder", txtCardHolder);
+
+            txtCardNumber = new TextBox();
+            AddLabelAndControl("Card Number", txtCardNumber);
+
+            txtCardExpiry = new TextBox { PlaceholderText = "MM/YY" };
+            AddLabelAndControl("Card Expiry", txtCardExpiry);
+
+            lblMessage = new Label { Left = 8, Top = y + 8, Width = 420, ForeColor = Color.FromArgb(180, 0, 0) };
+            panel.Controls.Add(lblMessage);
+
+            btnCreate = new Button { Text = "Create Account", Left = 140, Top = y + 40, Width = 140, BackColor = Color.FromArgb(0, 120, 215), ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnCreate.FlatAppearance.BorderSize = 0;
+            btnCreate.Click += BtnCreate_Click;
+            panel.Controls.Add(btnCreate);
+
+            btnCancel = new Button { Text = "Cancel", Left = 300, Top = y + 40, Width = 140 };
+            btnCancel.Click += (s, e) => { DialogResult = DialogResult.Cancel; Close(); };
+            panel.Controls.Add(btnCancel);
+
+            Controls.Add(lblTitle);
+            Controls.Add(panel);
+        }
+        // Handle Create button click event
+        private void BtnCreate_Click(object? sender, EventArgs e)
+        {
+            lblMessage.Text = string.Empty;
+            var name = txtName.Text.Trim();
+            var p1 = txtPass1.Text;
+            var p2 = txtPass2.Text;
+            var email = txtEmail.Text.Trim();
+            var addr1 = txtAddress1.Text.Trim();
+            var addr2 = txtAddress2.Text.Trim();
+            var city = txtCity.Text.Trim();
+            var state = txtState.Text.Trim();
+            var postal = txtPostal.Text.Trim();
+            var country = txtCountry.Text.Trim();
+            var cardHolder = txtCardHolder.Text.Trim();
+            var cardNumber = txtCardNumber.Text.Trim();
+            var cardExpiry = txtCardExpiry.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                lblMessage.Text = "Name required.";
+                return;
+            }
+            if (p1.Length < 6)
+            {
+                lblMessage.Text = "Password must be at least6 characters.";
+                return;
+            }
+            if (p1 != p2)
+            {
+                lblMessage.Text = "Passwords do not match.";
+                return;
+            }
+            // Create DTO
+            var dto = new RegisterDTO
+            {
+                Name = name,
+                Password = p1,
+                Email = string.IsNullOrWhiteSpace(email) ? null : email,
+                AddressLine1 = string.IsNullOrWhiteSpace(addr1) ? null : addr1,
+                AddressLine2 = string.IsNullOrWhiteSpace(addr2) ? null : addr2,
+                City = string.IsNullOrWhiteSpace(city) ? null : city,
+                State = string.IsNullOrWhiteSpace(state) ? null : state,
+                PostalCode = string.IsNullOrWhiteSpace(postal) ? null : postal,
+                Country = string.IsNullOrWhiteSpace(country) ? null : country,
+                CardHolderName = string.IsNullOrWhiteSpace(cardHolder) ? null : cardHolder,
+                CardNumber = string.IsNullOrWhiteSpace(cardNumber) ? null : cardNumber,
+                CardExpiry = string.IsNullOrWhiteSpace(cardExpiry) ? null : cardExpiry
+            };
+
+            try
+            {
+                if (_registrationService.Register(dto, out var error))
+                {
+                    MessageBox.Show("Account created. You can now log in.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    lblMessage.Text = error ?? "Failed to create account.";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = "Error: " + ex.Message;
+            }
+
+        }
+    }
+
+}

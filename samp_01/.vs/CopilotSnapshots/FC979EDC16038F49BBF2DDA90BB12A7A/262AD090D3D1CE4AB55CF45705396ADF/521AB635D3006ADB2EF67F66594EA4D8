@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MySql.Data.MySqlClient;
+using samp_01.Domain.DTO;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+ public class AdoPortfolioRepository : IPortfolioRepository
+ {
+ private readonly string _connectionString;
+ public AdoPortfolioRepository(string connectionString) => _connectionString = connectionString;
+
+ public SellerPortfolioDTO? GetPortfolio(int sellerId)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"SELECT sellerid, description, pricerangemin, pricerangemax, skills, profilepicpath FROM seller_portfolios WHERE sellerid=@sid LIMIT 1";
+ var list = db.Query(sql, r => new SellerPortfolioDTO
+ {
+ SellerId = r.GetInt32(0),
+ Description = r.IsDBNull(1) ? null : r.GetString(1),
+ PriceRangeMin = r.IsDBNull(2) ? null : r.GetDecimal(2),
+ PriceRangeMax = r.IsDBNull(3) ? null : r.GetDecimal(3),
+ Skills = r.IsDBNull(4) ? null : r.GetString(4),
+ ProfilePicPath = r.IsDBNull(5) ? null : r.GetString(5)
+ }, new MySqlParameter("@sid", sellerId));
+ return list.FirstOrDefault();
+ }
+
+ public void UpsertPortfolio(SellerPortfolio p)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"INSERT INTO seller_portfolios (sellerid, description, pricerangemin, pricerangemax, skills, profilepicpath, updatedat)
+ VALUES (@sid,@desc,@min,@max,@skills,@pic,@now)
+ ON DUPLICATE KEY UPDATE description=@desc, pricerangemin=@min, pricerangemax=@max, skills=@skills, profilepicpath=@pic, updatedat=@now";
+ db.ExecuteNonQuery(sql,
+ new MySqlParameter("@sid", p.SellerId),
+ new MySqlParameter("@desc", (object?)p.Description ?? DBNull.Value),
+ new MySqlParameter("@min", (object?)p.PriceRangeMin ?? DBNull.Value),
+ new MySqlParameter("@max", (object?)p.PriceRangeMax ?? DBNull.Value),
+ new MySqlParameter("@skills", (object?)p.Skills ?? DBNull.Value),
+ new MySqlParameter("@pic", (object?)p.ProfilePicPath ?? DBNull.Value),
+ new MySqlParameter("@now", DateTime.UtcNow));
+ }
+
+ public List<SellerProjectDTO> GetProjects(int sellerId)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"SELECT id, sellerid, title, description, imagepath, createdat FROM seller_projects WHERE sellerid=@sid ORDER BY createdat DESC";
+ return db.Query(sql, r => new SellerProjectDTO
+ {
+ Id = r.GetInt32(0),
+ SellerId = r.GetInt32(1),
+ Title = r.GetString(2),
+ Description = r.IsDBNull(3) ? null : r.GetString(3),
+ ImagePath = r.IsDBNull(4) ? null : r.GetString(4),
+ CreatedAt = r.GetDateTime(5)
+ }, new MySqlParameter("@sid", sellerId));
+ }
+
+ public int AddProject(SellerProject p)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = @"INSERT INTO seller_projects (sellerid, title, description, imagepath, createdat)
+ VALUES (@sid,@title,@desc,@img,@now)";
+ var rows = db.ExecuteNonQuery(sql,
+ new MySqlParameter("@sid", p.SellerId),
+ new MySqlParameter("@title", p.Title),
+ new MySqlParameter("@desc", (object?)p.Description ?? DBNull.Value),
+ new MySqlParameter("@img", (object?)p.ImagePath ?? DBNull.Value),
+ new MySqlParameter("@now", DateTime.UtcNow));
+ if (rows > 0)
+ {
+ using var db2 = new AdoDbContext(_connectionString);
+ var idObj = db2.ExecuteScalar("SELECT LAST_INSERT_ID();");
+ return Convert.ToInt32(idObj);
+ }
+ return 0;
+ }
+
+ public bool DeleteProject(int projectId, int sellerId)
+ {
+ using var db = new AdoDbContext(_connectionString);
+ var sql = "DELETE FROM seller_projects WHERE id=@pid AND sellerid=@sid";
+ var rows = db.ExecuteNonQuery(sql, new MySqlParameter("@pid", projectId), new MySqlParameter("@sid", sellerId));
+ return rows > 0;
+ }
+ }
+}

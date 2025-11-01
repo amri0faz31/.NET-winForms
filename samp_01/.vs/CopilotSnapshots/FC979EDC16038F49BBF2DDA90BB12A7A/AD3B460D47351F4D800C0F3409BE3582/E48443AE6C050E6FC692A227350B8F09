@@ -1,0 +1,227 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class LoginForm : Form
+    {
+        private TextBox txtName;
+        private TextBox txtPassword;
+        private Button btnLogin;
+        private LinkLabel lnkRegister;
+        private Label lblMessage;
+        private readonly LoginService _loginService;
+
+        public LoginForm()
+        {
+            _loginService = new LoginService();
+
+            // ✅ Color palette
+            var accent = Color.FromArgb(10, 132, 255);
+            var background = Color.FromArgb(245, 246, 250);
+            var cardColor = Color.White;
+            var headingColor = Color.FromArgb(30, 30, 30);
+            var labelColor = Color.FromArgb(90, 90, 90);
+
+            Text = "Login";
+            ClientSize = new Size(420, 330);
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = background;
+            Font = new Font("Segoe UI", 10);
+            FormBorderStyle = FormBorderStyle.None; // ✅ flat modern chrome
+
+            // ✅ Drop shadow for window
+            this.Paint += (s, e) =>
+            {
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                using var shadowBrush = new SolidBrush(Color.FromArgb(50, 0, 0, 0));
+                e.Graphics.FillRectangle(shadowBrush, new Rectangle(3, 3, Width - 6, Height - 6));
+            };
+
+            // ✅ Rounded border window
+            // Note: PInvoke.CreateRoundRectRgn is optional; if missing, the window will be normal.
+            try
+            {
+                this.Region = System.Drawing.Region.FromHrgn(
+                    PInvoke.CreateRoundRectRgn(0, 0, Width, Height, 20, 20)
+                );
+            }
+            catch
+            {
+                // ignore if PInvoke not available in some environments
+            }
+
+            // Title
+            var lblTitle = new Label
+            {
+                Text = "Welcome 👋",
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                AutoSize = true,
+                ForeColor = headingColor,
+                Location = new Point(32, 22)
+            };
+
+            var lblSubtitle = new Label
+            {
+                Text = "Sign in to continue",
+                Font = new Font("Segoe UI", 9),
+                AutoSize = true,
+                ForeColor = labelColor,
+                Location = new Point(34, 60)
+            };
+
+            // ✅ Modern card container with rounded corners + shadow
+            var card = new Panel
+            {
+                Size = new Size(360, 200),
+                Location = new Point(32, 90),
+                BackColor = cardColor,
+                BorderStyle = BorderStyle.None
+            };
+            card.Padding = new Padding(16);
+
+            // Rounded style + drop shadow
+            card.Paint += (s, e) =>
+            {
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                using var brush = new SolidBrush(cardColor);
+                using var shadow = new SolidBrush(Color.FromArgb(40, 0, 0, 0));
+                e.Graphics.FillRectangle(shadow, new Rectangle(2, 2, card.Width - 2, card.Height - 2));
+                e.Graphics.FillRectangle(brush, new Rectangle(0, 0, card.Width - 4, card.Height - 4));
+            };
+
+            // Labels + input fields
+            var lblName = new Label { Text = "Username", Left = 8, Top = 16, Width = 100, ForeColor = labelColor };
+            txtName = new TextBox
+            {
+                Left = 8,
+                Top = 36,
+                Width = 320,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                PlaceholderText = "Enter username"
+            };
+            txtName.TabIndex = 0;
+
+            var lblPass = new Label { Text = "Password", Left = 8, Top = 74, Width = 100, ForeColor = labelColor };
+            txtPassword = new TextBox
+            {
+                Left = 8,
+                Top = 94,
+                Width = 320,
+                UseSystemPasswordChar = true,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                PlaceholderText = "Enter password"
+            };
+            txtPassword.TabIndex = 1;
+
+            // Validation message
+            lblMessage = new Label
+            {
+                Top = 124,
+                Width = 320,
+                ForeColor = Color.FromArgb(200, 20, 20),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            // Login button (rounded)
+            btnLogin = new Button
+            {
+                Text = "Login",
+                Left = 8,
+                Top = 150,
+                Width = 140,
+                Height = 36,
+                BackColor = accent,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnLogin.FlatAppearance.BorderSize = 0;
+            btnLogin.Region = System.Drawing.Region.FromHrgn(
+                PInvoke.CreateRoundRectRgn(0, 0, btnLogin.Width, btnLogin.Height, 10, 10)
+            );
+
+            btnLogin.MouseEnter += (s, e) => btnLogin.BackColor = ControlPaint.Light(accent);
+            btnLogin.MouseLeave += (s, e) => btnLogin.BackColor = accent;
+
+            btnLogin.Click += BtnLogin_Click;
+            btnLogin.TabIndex = 2;
+
+            // Register link
+            lnkRegister = new LinkLabel
+            {
+                Text = "Create account",
+                Left = 190,
+                Top = 160,
+                AutoSize = true,
+                LinkColor = accent,
+                Cursor = Cursors.Hand
+            };
+            lnkRegister.TabIndex = 3;
+            lnkRegister.Click += LnkRegister_Click;
+
+            // Add to card + form
+            card.Controls.Add(lblName);
+            card.Controls.Add(txtName);
+            card.Controls.Add(lblPass);
+            card.Controls.Add(txtPassword);
+            card.Controls.Add(lblMessage);
+            card.Controls.Add(btnLogin);
+            card.Controls.Add(lnkRegister);
+
+            Controls.Add(lblTitle);
+            Controls.Add(lblSubtitle);
+            Controls.Add(card);
+
+            // Behavior
+            AcceptButton = btnLogin;
+            txtName.TextChanged += (s, e) => lblMessage.Text = "";
+            txtPassword.TextChanged += (s, e) => lblMessage.Text = "";
+        } // <-- close constructor added
+
+        private void LnkRegister_Click(object? sender, EventArgs e)
+        {
+            using var reg = new RegisterForm();
+            reg.ShowDialog(this);
+        }
+
+        private void BtnLogin_Click(object? sender, EventArgs e)
+        {
+            lblMessage.Text = "";
+            var name = txtName.Text.Trim();
+            var pass = txtPassword.Text;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                lblMessage.Text = "Name required.";
+                return;
+            }
+
+            try
+            {
+                var dto = new LoginDTO { Name = name, Password = pass };
+                if (_loginService.Authenticate(dto, out var profile) && profile != null)
+                {
+                    var dashboard = new DashboardForm(profile);
+                    dashboard.Show();
+                    Hide();
+                    dashboard.FormClosed += (s, ev) => { Show(); txtPassword.Clear(); };
+                }
+                else
+                {
+                    lblMessage.Text = "Invalid name or password.";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = "Error: " + ex.Message;
+            }
+        }
+    }
+}

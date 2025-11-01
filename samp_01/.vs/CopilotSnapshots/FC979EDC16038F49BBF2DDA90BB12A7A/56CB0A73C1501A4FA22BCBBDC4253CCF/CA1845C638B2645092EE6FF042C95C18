@@ -1,0 +1,11 @@
+﻿using System.Collections.Generic;
+using samp_01.Domain.Entities;
+
+namespace samp_01.Data.Repositories
+{
+ public interface IMessageRepository
+ {
+ int Add(samp_01.Domain.Entities.Message m);
+ System.Collections.Generic.List<samp_01.Domain.Entities.Message> GetByOrder(int orderId);
+ }
+}

@@ -1,0 +1,95 @@
+﻿# Project setup guide
+
+This document explains how to set up, build, run, and publish the .NET8 Windows Forms application in this repository.
+
+What this is
+- Application type: Windows Forms (.NET8, target framework `net8.0-windows`)
+- UI technology: WinForms (C#12)
+- Data store: MySQL
+- Data access: ADO.NET repositories (custom `AdoDbContext`) + EF Core-style migration classes that emit SQL (`MigrationBuilder.Sql`)
+- File storage: local file system under `data/` (attachments, deliveries, project images)
+
+Prerequisites
+- Windows10/11
+- Visual Studio2022 (17.8+) with:
+ - Workload: Desktop development with .NET
+- .NET8 SDK and runtime
+- MySQL Server8.x (or compatible) and MySQL Workbench/CLI
+- NuGet packages (restore will pull these automatically):
+ - MySql.Data (Oracle) for ADO.NET
+ - Microsoft.EntityFrameworkCore (for migration base types)
+ - Microsoft.EntityFrameworkCore.Relational (for `MigrationBuilder`)
+ - (Optional for EF tooling against MySQL) Pomelo.EntityFrameworkCore.MySql or Oracle EF provider
+
+Clone and open
+1) Clone the repository
+2) Open `samp_01.sln` (or `samp_01.csproj`) in Visual Studio2022
+3) Ensure the project targets `net8.0-windows`
+
+Configuration
+- Edit `AppConfig.cs` and set your MySQL connection string:
+ - `public static string ConnectionString = "Server=localhost;Port=3306;Database=samp_01;Uid=...;Pwd=...;SslMode=None;";`
+- Folders that the app will create/use at runtime:
+ - `data/orders/{orderId}/attachments`
+ - `data/orders/{orderId}/deliveries`
+
+Database schema setup
+Two supported approaches.
+
+A) Run the SQL in migrations (manual)
+- Migrations are in `Migrations/` and contain MySQL DDL/ALTER statements via `migrationBuilder.Sql(...)`.
+- In order (idempotent):
+1. `20251025_InitialCreate_AddUsersTable.cs` (creates `users`)
+2. `20251025_AddServicesAndSellers.cs` (creates `services`, `sellers`, seeds sample services)
+3. `20251029_AddOrdersMessagingPayments.cs` (creates `orders`, `messages`, `payments`)
+4. `20251030_AlterMessages_ForDirectChat.cs` (alters `messages` for direct chat and indexes)
+- Copy/paste the SQL strings from these files into MySQL Workbench and execute in your database.
+
+B) Use EF Core tools to apply migrations (optional)
+- Install tooling:
+ - `dotnet tool install --global dotnet-ef`
+- Add a MySQL EF provider (choose one):
+ - Pomelo: `dotnet add package Pomelo.EntityFrameworkCore.MySql`
+ - Oracle: `dotnet add package MySql.EntityFrameworkCore` (provider name may vary)
+- Then run from project directory:
+ - `dotnet ef database update`
+- Note: The migrations in this repo use raw SQL only; no model snapshots of entities are relied upon for table creation beyond the SQL. A provider is still needed for EF runtime.
+
+Build and run
+- Set `samp_01` as startup project
+- Start (F5). The app uses the connection string in `AppConfig.cs` to access MySQL.
+- First-run checks: verify the DB tables exist and credentials allow CRUD.
+
+Accounts and seeding
+- Admin: `Migrations/20251026_AddAdmins_SeedRoot.cs` seeds a default admin (name: `admin`, password: `Admin@123`).
+- Services seed: `AddServicesAndSellers` inserts sample services (idempotent).
+- Create users/providers via the provided registration forms or insert directly.
+
+Project structure highlights
+- `Forms/User/*`: User-facing dashboard, services browser, orders, direct messages
+- `Forms/ServiceProvider/*`: Provider dashboard, portfolio, orders, direct messages
+- `Services/*`: Business logic wrappers (orders, portfolio, login/registration)
+- `Data/Repositories/*`: ADO.NET repositories for MySQL access
+- `Migrations/*`: EF Migration classes containing MySQL SQL (idempotent)
+- `Domain/*`: Entities and DTOs
+
+Publish (distribute)
+- Visual Studio: right-click project > Publish
+ - Target: Folder
+ - Runtime: `win-x64`
+ - Deployment: Self-contained (includes .NET) or Framework-dependent (requires .NET8 Desktop Runtime)
+ - Single-file: On
+ - Trim: Off (WinForms uses reflection)
+- CLI example (self-contained, single-file):
+ - `dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -p:PublishTrimmed=false`
+ - Output: `bin/Release/net8.0-windows/win-x64/publish`
+
+Troubleshooting
+- Cannot publish: ensure the app is closed (file lock on `samp_01.exe`).
+- DB errors: verify connection string, server reachability, and that migration SQL was applied.
+- Missing images/paths: ensure local files referenced in portfolios/projects exist on the machine.
+
+Security notes
+- Do not hard-code production credentials in source.
+- Consider environment-specific config and secure secret storage.
+- Validate/limit file types for attachments in production environments.

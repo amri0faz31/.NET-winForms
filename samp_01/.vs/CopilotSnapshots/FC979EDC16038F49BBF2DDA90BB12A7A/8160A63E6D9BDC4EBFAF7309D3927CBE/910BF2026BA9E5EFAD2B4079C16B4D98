@@ -1,0 +1,50 @@
+﻿using System;
+using System.Linq;
+using samp_01.Data;
+using samp_01.Helpers;
+using ModelUser = samp_01.Models.User;
+
+namespace samp_01.Services
+{
+    public class UserService
+    {
+        private readonly string _connectionString;
+
+        // Use centralized AppConfig for the connection string
+        public UserService()
+        {
+            _connectionString = AppConfig.ConnectionString;
+        }
+
+        public bool Register(string name, string password, out string? error)
+        {
+            error = null;
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
+            {
+                error = "Name and password required.";
+                return false;
+            }
+
+            using var ctx = new AppDbContext(_connectionString);
+            if (ctx.Users.Any(u => u.Name == name))
+            {
+                error = "User already exists.";
+                return false;
+            }
+
+            var (hash, salt) = PasswordHelper.HashPassword(password);
+            var user = new ModelUser { Name = name, PasswordHash = hash, Salt = salt, CreatedAt = DateTime.UtcNow };
+            ctx.Users.Add(user);
+            ctx.SaveChanges();
+            return true;
+        }
+
+        public bool Validate(string name, string password)
+        {
+            using var ctx = new AppDbContext(_connectionString);
+            var user = ctx.Users.SingleOrDefault(u => u.Name == name);
+            if (user == null) return false;
+            return PasswordHelper.VerifyPassword(password, user.Salt, user.PasswordHash);
+        }
+    }
+}}

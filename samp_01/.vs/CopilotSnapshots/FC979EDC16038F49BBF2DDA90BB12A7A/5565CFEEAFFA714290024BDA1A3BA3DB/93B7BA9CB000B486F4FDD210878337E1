@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using samp_01.Domain.Entities;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Data.Repositories
+{
+ public interface ISellerRepository
+ {
+ bool ExistsByEmail(string email);
+ int AddSeller(Seller seller);
+ (int Id, string? Hash, string? Salt)? GetCredentialsByEmail(string email);
+ Seller? GetSellerEntityById(int id);
+ SellerProfileDTO? GetSellerProfileById(int id);
+ List<SellerSummaryDTO> GetSellersByService(int serviceId);
+ }
+}

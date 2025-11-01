@@ -1,0 +1,36 @@
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using samp_01.Domain.DTO;
+using samp_01.Services.ServiceProvider;
+
+namespace samp_01.Forms.ServiceProvider
+{
+    public partial class ServiceProviderDashboardForm : Form
+    {
+        private Button btnMessages;
+        private Button btnTransactions;
+
+        private void AddOrdersNav()
+        {
+            // assume sidebar panel _pnlSidebar exists and buttons created earlier
+            btnTransactions = CreateSidebarButton("Transactions", 225, 45);
+            btnTransactions.Click += (s, e) =>
+            {
+                var form = new ProviderOrdersForm(_profile, "transactions") { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+                LoadView(form); form.Show();
+            };
+            _pnlSidebar.Controls.Add(btnTransactions);
+
+            btnMessages = CreateSidebarButton("Messages", 270, 45);
+            btnMessages.Click += (s, e) =>
+            {
+                var form = new ProviderOrdersForm(_profile, "messages") { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+                LoadView(form); form.Show();
+            };
+            _pnlSidebar.Controls.Add(btnMessages);
+        }
+    }
+}

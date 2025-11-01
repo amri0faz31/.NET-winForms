@@ -1,0 +1,221 @@
+﻿using System;
+using System.Linq;
+using System.Data.Common;
+using System.Data;
+using Microsoft.EntityFrameworkCore;
+using samp_01.Data;
+using samp_01.Domain.Entities;
+using samp_01.Helpers;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Services.User
+{
+    using DomainUser = samp_01.Domain.Entities.User;
+
+    public class UserService
+    {
+        private readonly string _connectionString;
+
+        public UserService()
+        {
+            _connectionString = AppConfig.ConnectionString;
+        }
+
+        // New: Register using RegisterDTO and raw SQL (parameterized)
+        public bool Register(RegisterDTO dto, out string? error)
+        {
+            return Register(dto.Name, dto.Password, dto.Email,
+             dto.AddressLine1, dto.AddressLine2, dto.City, dto.State, dto.PostalCode, dto.Country,
+             dto.CardHolderName, dto.CardNumber, dto.CardExpiry, out error);
+        }
+
+        // Backwards-compatible Register implementation (uses raw SQL)
+        public bool Register(string name, string password, string? email,
+         string? addressLine1, string? addressLine2, string? city, string? state, string? postalCode, string? country,
+         string? cardHolderName, string? cardNumber, string? cardExpiry, out string? error)
+        {
+                error = null;
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
+                {
+                     error = "Name and password required.";
+                     return false;
+                }
+
+                // Hash password
+                var (hash, salt) = PasswordHelper.HashPassword(password);
+
+                using var ctx = new AppDbContext(_connectionString);
+                 var conn = ctx.Database.GetDbConnection();
+                 if (conn.State != ConnectionState.Open) conn.Open();
+
+                // Check existence using raw SQL
+                using (var checkCmd = conn.CreateCommand())
+                 {
+                     checkCmd.CommandText = "SELECT COUNT(1) FROM users WHERE name = @name";
+                     var p = checkCmd.CreateParameter(); p.ParameterName = "@name"; p.Value = name; checkCmd.Parameters.Add(p);
+                     var exists = Convert.ToInt32(checkCmd.ExecuteScalar() ??0) >0;
+                     if (exists)
+                     {
+                         error = "User already exists.";
+                         return false;
+                     }
+                 }
+
+                // Insert using parameterized query
+                using (var insertCmd = conn.CreateCommand())
+                 {
+                     insertCmd.CommandText = @"INSERT INTO users
+                     (name, passwordhash, salt, email, addressline1, addressline2, city, state, postalcode, country, cardholdername, cardmasked, cardlast4, cardexpiry, createdat)
+                     VALUES
+                     (@name, @hash, @salt, @email, @address1, @address2, @city, @state, @postal, @country, @cardholder, @cardmasked, @cardlast4, @cardexpiry, @now)";
+
+                     void AddParam(string nameParam, object? value)
+                     {
+                         var p = insertCmd.CreateParameter();
+                         p.ParameterName = nameParam;
+                         p.Value = value ?? DBNull.Value;
+                         insertCmd.Parameters.Add(p);
+                     }
+
+                     AddParam("@name", name);
+                     AddParam("@hash", hash);
+                     AddParam("@salt", salt);
+                     AddParam("@email", email);
+                     AddParam("@address1", addressLine1);
+                     AddParam("@address2", addressLine2);
+                     AddParam("@city", city);
+                     AddParam("@state", state);
+                     AddParam("@postal", postalCode);
+                     AddParam("@country", country);
+                     AddParam("@cardholder", cardHolderName);
+                     var masked = MaskCardNumber(cardNumber);
+                     var last4 = MaskCardLast4(cardNumber);
+                     AddParam("@cardmasked", masked);
+                     AddParam("@cardlast4", last4);
+                     AddParam("@cardexpiry", cardExpiry);
+                     AddParam("@now", DateTime.UtcNow);
+
+                     try
+                     {
+                         var rows = insertCmd.ExecuteNonQuery();
+                         return rows >0;
+                     }
+                     catch (DbException ex)
+                     {
+                         error = "Database error: " + ex.Message;
+                         return false;
+                     }
+                 }
+         }
+
+        // New: Authenticate using LoginDTO and return UserProfileDTO on success
+        public bool Authenticate(LoginDTO dto, out UserProfileDTO? profile)
+        {
+            profile = null;
+            if (dto == null) return false;
+
+            using var ctx = new AppDbContext(_connectionString);
+            var conn = ctx.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open) conn.Open();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT id, passwordhash, salt FROM users WHERE name = @name LIMIT1";
+            var p = cmd.CreateParameter(); 
+            p.ParameterName = "@name"; 
+            p.Value = dto.Name; 
+            cmd.Parameters.Add(p);
+
+            using var rdr = cmd.ExecuteReader();
+            if (!rdr.Read()) return false;
+
+            var id = rdr.GetInt32(0);
+            var storedHash = rdr.GetString(1);
+            var storedSalt = rdr.GetString(2);
+
+            if (!PasswordHelper.VerifyPassword(dto.Password, storedSalt, storedHash)) return false;
+
+            // load profile fields via another query
+            profile = GetProfileById(id);
+            return profile != null;
+        }
+
+        // New: Get profile DTO by username
+        public UserProfileDTO? GetProfileByName(string name)
+        {
+            using var ctx = new AppDbContext(_connectionString);
+            var conn = ctx.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open) conn.Open();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT id, name, email, addressline1, addressline2, city, state, postalcode, country, cardmasked, cardlast4, cardexpiry, createdat
+                                FROM users WHERE name = @name LIMIT1";
+            var p = cmd.CreateParameter(); p.ParameterName = "@name"; p.Value = name; cmd.Parameters.Add(p);
+
+            using var rdr = cmd.ExecuteReader();
+            if (!rdr.Read()) return null;
+
+            return MapReaderToProfile(rdr);
+        }
+
+        private UserProfileDTO? GetProfileById(int id)
+        {
+            using var ctx = new AppDbContext(_connectionString);
+            var conn = ctx.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open) conn.Open();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT id, name, email, addressline1, addressline2, city, state, postalcode, country, cardmasked, cardlast4, cardexpiry, createdat
+                                FROM users WHERE id = @id LIMIT1";
+            var p = cmd.CreateParameter(); p.ParameterName = "@id"; p.Value = id; cmd.Parameters.Add(p);
+
+            using var rdr = cmd.ExecuteReader();
+            if (!rdr.Read()) return null;
+            return MapReaderToProfile(rdr);
+        }
+
+        private static UserProfileDTO MapReaderToProfile(DbDataReader rdr)
+        {
+            var dto = new UserProfileDTO();
+            dto.Id = rdr.GetInt32(0);
+            dto.Name = rdr.GetString(1);
+            dto.Email = rdr.IsDBNull(2) ? null : rdr.GetString(2);
+            dto.AddressLine1 = rdr.IsDBNull(3) ? null : rdr.GetString(3);
+            dto.AddressLine2 = rdr.IsDBNull(4) ? null : rdr.GetString(4);
+            dto.City = rdr.IsDBNull(5) ? null : rdr.GetString(5);
+            dto.State = rdr.IsDBNull(6) ? null : rdr.GetString(6);
+            dto.PostalCode = rdr.IsDBNull(7) ? null : rdr.GetString(7);
+            dto.Country = rdr.IsDBNull(8) ? null : rdr.GetString(8);
+            dto.CardMasked = rdr.IsDBNull(9) ? null : rdr.GetString(9);
+            dto.CardLast4 = rdr.IsDBNull(10) ? null : rdr.GetString(10);
+            dto.CardExpiry = rdr.IsDBNull(11) ? null : rdr.GetString(11);
+            dto.CreatedAt = rdr.IsDBNull(12) ? DateTime.MinValue : rdr.GetDateTime(12);
+            return dto;
+        }
+
+        // legacy Validate kept for compatibility (wraps Authenticate)
+        public bool Validate(string name, string password)
+        {
+            var dto = new LoginDTO { Name = name, Password = password };
+            return Authenticate(dto, out var profile);
+        }
+
+        // used to mask card number except last4 digits
+        private static string? MaskCardNumber(string? cardNumber)
+        {
+                if (string.IsNullOrWhiteSpace(cardNumber)) return null;
+                // only keep last4, mask rest
+                var digits = new string(cardNumber.Where(char.IsDigit).ToArray());
+                if (digits.Length <=4) return digits;
+                return new string('*', digits.Length -4) + digits.Substring(digits.Length -4);
+        }
+
+        //used to extract last 4 digits of card number and discard rest in storage
+        private static string? MaskCardLast4(string? cardNumber)
+         {
+                if (string.IsNullOrWhiteSpace(cardNumber)) return null;
+                var digits = new string(cardNumber.Where(char.IsDigit).ToArray());
+                if (digits.Length <=4) return digits;
+                return digits.Substring(digits.Length -4);
+         }
+    }
+}

@@ -1,0 +1,133 @@
+﻿using System;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
+
+namespace samp_01.Data.Repositories
+{
+    /// <summary>
+    /// ADO.NET implementation of <see cref="IMessageRepository"/> for MySQL.
+    /// </summary>
+    /// <remarks>
+    /// Used by:
+    /// - Services/Orders/OrderService (posting system messages like delivery and requirements)
+    /// - Forms/User/UserOrdersForm (user chat UI)
+    /// - Forms/ServiceProvider/ProviderOrdersForm (seller chat UI)
+    /// </remarks>
+    public class AdoMessageRepository : IMessageRepository
+    {
+        private readonly string _cs;
+
+        /// <summary>
+        /// Construct repository with a connection string.
+        /// </summary>
+        public AdoMessageRepository(string cs) { _cs = cs; }
+
+        /// <summary>
+        /// Adds a message row to the messages table.
+        /// </summary>
+        /// <param name="m">Message entity (order id, sender, optional text and file path).</param>
+        /// <returns>Generated id or0 if insert failed.</returns>
+        public int Add(samp_01.Domain.Entities.Message m)
+        {
+            using var db = new AdoDbContext(_cs);
+            var sql = @"INSERT INTO messages (orderid, senderid, receiverid, sendertype, receivertype, message, filepath, sentat)
+                         VALUES (@oid,@sid,@rid,@stype,@rtype,@msg,@file,@at)";
+            var rows = db.ExecuteNonQuery(sql,
+                new MySqlParameter("@oid", (object?)m.OrderId ?? DBNull.Value),
+                new MySqlParameter("@sid", m.SenderId),
+                new MySqlParameter("@rid", (object?)m.ReceiverId ?? DBNull.Value),
+                new MySqlParameter("@stype", m.SenderType),
+                new MySqlParameter("@rtype", (object?)m.ReceiverType ?? DBNull.Value),
+                new MySqlParameter("@msg", (object?)m.Body ?? DBNull.Value),
+                new MySqlParameter("@file", (object?)m.FilePath ?? DBNull.Value),
+                new MySqlParameter("@at", m.SentAt));
+            if (rows >0)
+            {
+                using var db2 = new AdoDbContext(_cs);
+                return Convert.ToInt32(db2.ExecuteScalar("SELECT LAST_INSERT_ID();"));
+            }
+            return0;
+        }
+
+        /// <summary>
+        /// Returns messages for an order sorted by time ascending.
+        /// </summary>
+        /// <param name="orderId">Order identifier.</param>
+        public List<samp_01.Domain.Entities.Message> GetByOrder(int orderId)
+        {
+            using var db = new AdoDbContext(_cs);
+            var sql = "SELECT id, orderid, senderid, receiverid, sendertype, receivertype, message, filepath, sentat FROM messages WHERE orderid=@oid ORDER BY sentat ASC";
+            return db.Query(sql, r => new samp_01.Domain.Entities.Message
+            {
+                Id = r.GetInt32(0),
+                OrderId = r.IsDBNull(1) ? (int?)null : r.GetInt32(1),
+                SenderId = r.GetInt32(2),
+                ReceiverId = r.IsDBNull(3) ? (int?)null : r.GetInt32(3),
+                SenderType = r.GetString(4),
+                ReceiverType = r.IsDBNull(5) ? null : r.GetString(5),
+                Body = r.IsDBNull(6) ? null : r.GetString(6),
+                FilePath = r.IsDBNull(7) ? null : r.GetString(7),
+                SentAt = r.GetDateTime(8)
+            }, new MySqlParameter("@oid", orderId));
+        }
+
+        /// <summary>
+        /// Returns direct message thread between two participants.
+        /// </summary>
+        /// <param name="meId">My identifier.</param>
+        /// <param name="meType">My type (e.g. user, provider).</param>
+        /// <param name="peerId">Peer identifier.</param>
+        /// <param name="peerType">Peer type (e.g. user, provider).</param>
+        public List<samp_01.Domain.Entities.Message> GetDirect(int meId, string meType, int peerId, string peerType)
+        {
+            using var db = new AdoDbContext(_cs);
+            var sql = @"SELECT id, orderid, senderid, receiverid, sendertype, receivertype, message, filepath, sentat
+ FROM messages
+ WHERE orderid IS NULL
+ AND ((senderid=@me AND sendertype=@met AND receiverid=@peer AND receivertype=@peert)
+ OR (senderid=@peer AND sendertype=@peert AND receiverid=@me AND receivertype=@met))
+ ORDER BY sentat ASC";
+            return db.Query(sql, r => new samp_01.Domain.Entities.Message
+            {
+                Id = r.GetInt32(0),
+                OrderId = r.IsDBNull(1) ? (int?)null : r.GetInt32(1),
+                SenderId = r.GetInt32(2),
+                ReceiverId = r.IsDBNull(3) ? (int?)null : r.GetInt32(3),
+                SenderType = r.GetString(4),
+                ReceiverType = r.IsDBNull(5) ? null : r.GetString(5),
+                Body = r.IsDBNull(6) ? null : r.GetString(6),
+                FilePath = r.IsDBNull(7) ? null : r.GetString(7),
+                SentAt = r.GetDateTime(8)
+            }, new MySqlParameter("@me", meId), new MySqlParameter("@met", meType), new MySqlParameter("@peer", peerId), new MySqlParameter("@peert", peerType));
+        }
+
+        /// <summary>
+        /// Returns direct message conversations for a participant.
+        /// </summary>
+        /// <param name="meId">My identifier.</param>
+        /// <param name="meType">My type (e.g. user, provider).</param>
+        public List<(int PeerId, string PeerType, DateTime LastAt, string? Preview)> GetDirectConversations(int meId, string meType)
+        {
+            using var db = new AdoDbContext(_cs);
+            var sql = @"SELECT t.peerid, t.peertype, MAX(t.sentat) AS lastat,
+ SUBSTRING_INDEX(TRIM(GROUP_CONCAT(t.message ORDER BY t.sentat DESC SEPARATOR '\n')), '\n',1) AS preview
+ FROM (
+ SELECT CASE WHEN m.senderid=@me AND m.sendertype=@met THEN m.receiverid ELSE m.senderid END AS peerid,
+ CASE WHEN m.senderid=@me AND m.sendertype=@met THEN m.receivertype ELSE m.sendertype END AS peertype,
+ m.sentat, m.message
+ FROM messages m
+ WHERE m.orderid IS NULL AND (
+ (m.senderid=@me AND m.sendertype=@met) OR (m.receiverid=@me AND m.receivertype=@met)
+ )
+ ) t
+ GROUP BY t.peerid, t.peertype
+ ORDER BY lastat DESC";
+            return db.Query(sql, r => (
+ PeerId: r.GetInt32(0),
+ PeerType: r.GetString(1),
+ LastAt: r.GetDateTime(2),
+ Preview: r.IsDBNull(3) ? null : r.GetString(3)
+ ), new MySqlParameter("@me", meId), new MySqlParameter("@met", meType));
+ }
+ }
+}

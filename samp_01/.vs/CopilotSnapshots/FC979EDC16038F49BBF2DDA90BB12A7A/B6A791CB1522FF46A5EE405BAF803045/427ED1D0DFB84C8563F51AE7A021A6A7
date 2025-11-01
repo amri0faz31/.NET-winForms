@@ -1,0 +1,39 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+    public class UserProfileForm : Form
+    {
+         private readonly UserProfileService _profileService;
+         private readonly string _userName;
+
+         public UserProfileForm(string userName)
+         {
+             _profileService = new UserProfileService();
+             _userName = userName;
+
+             Text = "Profile";
+             ClientSize = new Size(420,360);
+             StartPosition = FormStartPosition.CenterParent;
+             Font = new Font("Segoe UI",9);
+
+             var user = _profileService.GetByName(userName);
+             if (user == null)
+             {
+                Controls.Add(new Label { Text = "User not found", AutoSize = true, ForeColor = Color.Red });
+                return;
+             }
+
+             var lblName = new Label { Text = $"Name: {user.Name}", Left =20, Top =20, AutoSize = true };
+             var lblEmail = new Label { Text = $"Email: {user.Email}", Left =20, Top =50, AutoSize = true };
+             var lblAddress = new Label { Text = $"Address: {user.AddressLine1} {user.AddressLine2}, {user.City} {user.PostalCode}, {user.Country}", Left =20, Top =80, Width =380 };
+             var lblCard = new Label { Text = $"Card: {user.CardMasked} (exp {user.CardExpiry})", Left =20, Top =140, AutoSize = true };
+
+             Controls.AddRange(new Control[] { lblName, lblEmail, lblAddress, lblCard });
+          }
+     }
+}

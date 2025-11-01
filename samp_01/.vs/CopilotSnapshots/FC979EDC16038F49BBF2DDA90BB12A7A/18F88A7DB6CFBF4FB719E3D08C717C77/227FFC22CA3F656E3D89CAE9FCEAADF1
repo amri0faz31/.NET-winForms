@@ -1,0 +1,155 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using samp_01.Services.User;
+using samp_01.Domain.DTO;
+
+namespace samp_01.Forms.User
+{
+ public class LoginForm : Form
+ {
+ private TextBox txtName;
+ private TextBox txtPassword;
+ private Button btnLogin;
+ private LinkLabel lnkRegister;
+ private Label lblMessage;
+ private readonly LoginService _loginService;
+
+ public LoginForm()
+ {
+ _loginService = new LoginService();
+
+ Text = "Login";
+ ClientSize = new Size(380,260);
+ StartPosition = FormStartPosition.CenterScreen;
+ BackColor = Color.FromArgb(250,250,250);
+ Font = new Font("Segoe UI",9);
+
+ // Title
+ var lblTitle = new Label
+ {
+ Text = "Welcome",
+ Font = new Font("Segoe UI",16, FontStyle.Bold),
+ AutoSize = true,
+ ForeColor = Color.FromArgb(34,34,34),
+ Location = new Point(24,18)
+ };
+
+ var lblSubtitle = new Label
+ {
+ Text = "Sign in to your account",
+ Font = new Font("Segoe UI",9, FontStyle.Regular),
+ AutoSize = true,
+ ForeColor = Color.Gray,
+ Location = new Point(24,48)
+ };
+
+ // Container box
+ var grp = new GroupBox
+ {
+ Text = string.Empty,
+ Size = new Size(332,160),
+ Location = new Point(24,78),
+ BackColor = Color.White
+ };
+
+ // Name
+ var lblName = new Label { Text = "Name", Left =12, Top =12, Width =60 };
+ txtName = new TextBox { Left =12 +60, Top =10, Width =240, BorderStyle = BorderStyle.FixedSingle };
+ txtName.TabIndex =0;
+
+ // Password
+ var lblPass = new Label { Text = "Password", Left =12, Top =52, Width =60 };
+ txtPassword = new TextBox { Left =12 +60, Top =50, Width =240, UseSystemPasswordChar = true, BorderStyle = BorderStyle.FixedSingle };
+ txtPassword.TabIndex =1;
+
+ // Message
+ lblMessage = new Label { Left =12, Top =88, Width =300, ForeColor = Color.FromArgb(180,0,0) };
+
+ // Buttons
+ btnLogin = new Button
+ {
+ Text = "Login",
+ Left =12 +60,
+ Top =112,
+ Width =110,
+ BackColor = Color.FromArgb(0,120,215),
+ ForeColor = Color.White,
+ FlatStyle = FlatStyle.Flat
+ };
+ btnLogin.FlatAppearance.BorderSize =0;
+ btnLogin.TabIndex =2;
+ btnLogin.Click += BtnLogin_Click;
+
+ lnkRegister = new LinkLabel
+ {
+ Text = "Register",
+ Left =12 +60 +130,
+ Top =116,
+ AutoSize = true
+ };
+ lnkRegister.TabIndex =3;
+ lnkRegister.Click += LnkRegister_Click;
+
+ // Add controls to group
+ grp.Controls.Add(lblName);
+ grp.Controls.Add(txtName);
+ grp.Controls.Add(lblPass);
+ grp.Controls.Add(txtPassword);
+ grp.Controls.Add(lblMessage);
+ grp.Controls.Add(btnLogin);
+ grp.Controls.Add(lnkRegister);
+
+ // Add to form
+ Controls.Add(lblTitle);
+ Controls.Add(lblSubtitle);
+ Controls.Add(grp);
+
+ // Keyboard behavior
+ AcceptButton = btnLogin;
+
+ // Basic focus behavior to clear messages
+ txtName.TextChanged += (s, e) => lblMessage.Text = string.Empty;
+ txtPassword.TextChanged += (s, e) => lblMessage.Text = string.Empty;
+ }
+
+ private void LnkRegister_Click(object? sender, EventArgs e)
+ {
+ using var reg = new RegisterForm();
+ reg.ShowDialog(this);
+ }
+
+ private void BtnLogin_Click(object? sender, EventArgs e)
+ {
+ lblMessage.Text = "";
+ var name = txtName.Text.Trim();
+ var pass = txtPassword.Text;
+
+ if (string.IsNullOrWhiteSpace(name))
+ {
+ lblMessage.Text = "Name required.";
+ return;
+ }
+
+ try
+ {
+ var dto = new LoginDTO { Name = name, Password = pass };
+ if (_loginService.Authenticate(dto, out var profile))
+ {
+ var dashboard = new DashboardForm(profile);
+ dashboard.Show();
+ Hide();
+ dashboard.FormClosed += (s, ev) => { Show(); txtPassword.Clear(); };
+ }
+ else
+ {
+ lblMessage.Text = "Invalid name or password.";
+ }
+ }
+ catch (Exception ex)
+ {
+ lblMessage.Text = "Error: " + ex.Message;
+ }
+ }
+ }
+}
